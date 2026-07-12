@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../core/constants/app_routes.dart';
+import '../../stats/providers/stats_provider.dart';
 import '../widgets/category_card.dart';
 import '../widgets/mode_button.dart';
 import '../widgets/stat_chip.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedTab = 0;
 
   final List<_TabItem> _tabs = const [
@@ -118,20 +120,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStatsRow(BuildContext context) {
+    final stats = ref.watch(statsProvider);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Row(
         children: [
-          Expanded(child: const StatChip(icon: Icons.emoji_events_rounded,
-            value: '0', label: 'Victorias', color: AppTheme.accent,
+          Expanded(child: StatChip(icon: Icons.emoji_events_rounded,
+            value: '${stats.wins}', label: 'Victorias', color: AppTheme.accent,
           ).animate().fadeIn(delay: 500.ms)),
           const SizedBox(width: 10),
-          Expanded(child: const StatChip(icon: Icons.videogame_asset_rounded,
-            value: '0', label: 'Partidas', color: AppTheme.accentBlue,
+          Expanded(child: StatChip(icon: Icons.videogame_asset_rounded,
+            value: '${stats.gamesPlayed}', label: 'Partidas',
+            color: AppTheme.accentBlue,
           ).animate().fadeIn(delay: 580.ms)),
           const SizedBox(width: 10),
-          Expanded(child: const StatChip(icon: Icons.speed_rounded,
-            value: '--', label: 'Mejor tiempo', color: AppTheme.accentOrange,
+          Expanded(child: StatChip(icon: Icons.speed_rounded,
+            value: stats.formattedBestOverall, label: 'Mejor tiempo',
+            color: AppTheme.accentOrange,
           ).animate().fadeIn(delay: 660.ms)),
         ],
       ),

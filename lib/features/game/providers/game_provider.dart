@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../stats/providers/stats_provider.dart';
 import '../logic/puzzle_engine.dart';
 import '../models/puzzle_models.dart';
 
 class GameNotifier extends StateNotifier<GameState> {
-  GameNotifier(this.config)
+  GameNotifier(this.config, this._stats)
       : super(GameState(
           tiles: PuzzleEngine.createShuffled(config.difficulty.tileCount),
         )) {
+    _stats.recordGameStarted();
     _startTimer();
   }
 
   final PuzzleConfig config;
+  final StatsNotifier _stats;
   Timer? _timer;
 
   void _startTimer() {
@@ -39,15 +42,22 @@ class GameNotifier extends StateNotifier<GameState> {
     }
 
     final tiles = PuzzleEngine.swap(state.tiles, selected, index);
-    final solved = PuzzleEngine.isSolved(tiles);
-    state = state
-        .copyWith(
-          tiles: tiles,
-          moves: state.moves + 1,
-          status: solved ? GameStatus.won : GameStatus.playing,
-        )
-        .withSelection(null);
-    if (solved) _timer?.cancel();
+    if (PuzzleEngine.isSolved(tiles)) {
+      _timer?.cancel();
+      final outcome = _stats.recordWin(config.difficulty, state.seconds);
+      state = GameState(
+        tiles: tiles,
+        moves: state.moves + 1,
+        seconds: state.seconds,
+        status: GameStatus.won,
+        isNewRecord: outcome.isNewRecord,
+        previousBestSeconds: outcome.previousBestSeconds,
+      );
+    } else {
+      state = state
+          .copyWith(tiles: tiles, moves: state.moves + 1)
+          .withSelection(null);
+    }
   }
 
   void pause() {
@@ -66,6 +76,7 @@ class GameNotifier extends StateNotifier<GameState> {
     state = GameState(
       tiles: PuzzleEngine.createShuffled(config.difficulty.tileCount),
     );
+    _stats.recordGameStarted();
     _startTimer();
   }
 
@@ -78,5 +89,5 @@ class GameNotifier extends StateNotifier<GameState> {
 
 final gameProvider = StateNotifierProvider.autoDispose
     .family<GameNotifier, GameState, PuzzleConfig>(
-  (ref, config) => GameNotifier(config),
+  (ref, config) => GameNotifier(config, ref.read(statsProvider.notifier)),
 );

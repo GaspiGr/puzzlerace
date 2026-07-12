@@ -11,6 +11,9 @@ class DifficultyScreen extends StatefulWidget {
   final String categoryLabel;
   final String categoryEmoji;
   final Color categoryColor;
+  final String imageId;
+  final String imageName;
+  final int imageSeed;
 
   const DifficultyScreen({
     super.key,
@@ -19,6 +22,9 @@ class DifficultyScreen extends StatefulWidget {
     required this.categoryLabel,
     required this.categoryEmoji,
     required this.categoryColor,
+    required this.imageId,
+    required this.imageName,
+    required this.imageSeed,
   });
 
   @override
@@ -37,6 +43,9 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
         categoryLabel: widget.categoryLabel,
         categoryEmoji: widget.categoryEmoji,
         categoryColor: widget.categoryColor,
+        imageId: widget.imageId,
+        imageName: widget.imageName,
+        imageSeed: widget.imageSeed,
         difficulty: _selected,
       ),
     );
@@ -139,9 +148,13 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
           children: [
             Text(widget.categoryEmoji, style: const TextStyle(fontSize: 15)),
             const SizedBox(width: 8),
-            Text(widget.categoryLabel,
-                style: TextStyle(
-                    color: color, fontSize: 13, fontWeight: FontWeight.w600)),
+            Flexible(
+              child: Text(widget.imageName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: color, fontSize: 13, fontWeight: FontWeight.w600)),
+            ),
             const SizedBox(width: 8),
             Container(width: 1, height: 14, color: color.withOpacity(0.3)),
             const SizedBox(width: 8),
