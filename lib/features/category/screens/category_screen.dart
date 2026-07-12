@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
+import '../../../core/constants/app_routes.dart';
 
 class CategoryScreen extends StatelessWidget {
   final String mode;
@@ -125,7 +126,13 @@ class CategoryScreen extends StatelessWidget {
           final cat = _categories[i];
           return _CategoryCard(
             category: cat,
-            onTap: () => _showComingSoon(context, cat.label),
+            onTap: () => context.push(AppRoutes.difficulty, extra: {
+              'mode': mode,
+              'categoryId': cat.id,
+              'categoryLabel': cat.label,
+              'categoryEmoji': cat.emoji,
+              'categoryColor': cat.color,
+            }),
           ).animate()
             .fadeIn(delay: (300 + i * 70).ms)
             .slideY(begin: 0.15, end: 0, delay: (300 + i * 70).ms);
@@ -134,27 +141,6 @@ class CategoryScreen extends StatelessWidget {
     );
   }
 
-  void _showComingSoon(BuildContext context, String name) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(children: [
-          const Icon(Icons.construction_rounded, color: AppTheme.accent, size: 18),
-          const SizedBox(width: 10),
-          Text('$name — ¡Próximamente!',
-            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 13)),
-        ]),
-        backgroundColor: AppTheme.surface2,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: AppTheme.border),
-        ),
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
 }
 
 class _CategoryCard extends StatefulWidget {
