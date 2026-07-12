@@ -126,7 +126,7 @@ class CategoryScreen extends StatelessWidget {
           final cat = _categories[i];
           return _CategoryCard(
             category: cat,
-            onTap: () => context.push(AppRoutes.difficulty, extra: {
+            onTap: () => context.push(AppRoutes.images, extra: {
               'mode': mode,
               'categoryId': cat.id,
               'categoryLabel': cat.label,

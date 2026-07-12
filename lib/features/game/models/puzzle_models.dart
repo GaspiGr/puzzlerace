@@ -26,6 +26,9 @@ class PuzzleConfig {
   final String categoryLabel;
   final String categoryEmoji;
   final Color categoryColor;
+  final String imageId;
+  final String imageName;
+  final int imageSeed;
   final Difficulty difficulty;
 
   const PuzzleConfig({
@@ -34,23 +37,25 @@ class PuzzleConfig {
     required this.categoryLabel,
     required this.categoryEmoji,
     required this.categoryColor,
+    required this.imageId,
+    required this.imageName,
+    required this.imageSeed,
     required this.difficulty,
   });
 
   /// Semilla determinística para generar el arte del puzzle.
-  int get artSeed =>
-      categoryId.codeUnits.fold(7, (acc, unit) => acc * 31 + unit) +
-      difficulty.index;
+  int get artSeed => imageSeed;
 
   @override
   bool operator ==(Object other) =>
       other is PuzzleConfig &&
       other.mode == mode &&
       other.categoryId == categoryId &&
+      other.imageId == imageId &&
       other.difficulty == difficulty;
 
   @override
-  int get hashCode => Object.hash(mode, categoryId, difficulty);
+  int get hashCode => Object.hash(mode, categoryId, imageId, difficulty);
 }
 
 enum GameStatus { playing, paused, won }
@@ -65,12 +70,19 @@ class GameState {
   final int seconds;
   final GameStatus status;
 
+  /// Solo con estado `won`: si la partida batió el récord de su dificultad
+  /// y cuál era el mejor tiempo anterior.
+  final bool isNewRecord;
+  final int? previousBestSeconds;
+
   const GameState({
     required this.tiles,
     this.selectedIndex,
     this.moves = 0,
     this.seconds = 0,
     this.status = GameStatus.playing,
+    this.isNewRecord = false,
+    this.previousBestSeconds,
   });
 
   GameState copyWith({
@@ -85,6 +97,8 @@ class GameState {
       moves: moves ?? this.moves,
       seconds: seconds ?? this.seconds,
       status: status ?? this.status,
+      isNewRecord: isNewRecord,
+      previousBestSeconds: previousBestSeconds,
     );
   }
 
@@ -95,8 +109,33 @@ class GameState {
       moves: moves,
       seconds: seconds,
       status: status,
+      isNewRecord: isNewRecord,
+      previousBestSeconds: previousBestSeconds,
     );
   }
+
+  String get formattedTime {
+    final m = (seconds ~/ 60).toString().padLeft(2, '0');
+    final s = (seconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+}
+
+/// Datos que la pantalla de juego entrega a la pantalla de resultados.
+class GameResult {
+  final PuzzleConfig config;
+  final int seconds;
+  final int moves;
+  final bool isNewRecord;
+  final int? previousBestSeconds;
+
+  const GameResult({
+    required this.config,
+    required this.seconds,
+    required this.moves,
+    required this.isNewRecord,
+    required this.previousBestSeconds,
+  });
 
   String get formattedTime {
     final m = (seconds ~/ 60).toString().padLeft(2, '0');

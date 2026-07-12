@@ -91,6 +91,26 @@ class PuzzleArt {
   }
 }
 
+/// Pinta la obra completa (vista previa en la galería de imágenes).
+class PuzzleArtPainter extends CustomPainter {
+  final Color baseColor;
+  final int seed;
+
+  const PuzzleArtPainter({required this.baseColor, required this.seed});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.save();
+    canvas.clipRect(Offset.zero & size);
+    PuzzleArt.paintFull(canvas, size, baseColor, seed);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(PuzzleArtPainter oldDelegate) =>
+      oldDelegate.baseColor != baseColor || oldDelegate.seed != seed;
+}
+
 /// Pinta una sola pieza: recorta la región `tileId` de la obra completa.
 class PuzzleTilePainter extends CustomPainter {
   final int tileId;

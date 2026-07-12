@@ -15,6 +15,23 @@ class GameScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Al completar el puzzle se navega a la pantalla de resultados.
+    ref.listen(gameProvider(config), (previous, next) {
+      if (previous?.status != GameStatus.won &&
+          next.status == GameStatus.won) {
+        context.pushReplacement(
+          AppRoutes.results,
+          extra: GameResult(
+            config: config,
+            seconds: next.seconds,
+            moves: next.moves,
+            isNewRecord: next.isNewRecord,
+            previousBestSeconds: next.previousBestSeconds,
+          ),
+        );
+      }
+    });
+
     final state = ref.watch(gameProvider(config));
     final notifier = ref.read(gameProvider(config).notifier);
 
@@ -45,12 +62,6 @@ class GameScreen extends ConsumerWidget {
           ),
           if (state.status == GameStatus.paused)
             _PauseOverlay(onResume: notifier.resume),
-          if (state.status == GameStatus.won)
-            _VictoryOverlay(
-              config: config,
-              state: state,
-              onRestart: notifier.restart,
-            ),
         ],
       ),
     );
@@ -70,13 +81,15 @@ class GameScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${config.categoryEmoji} ${config.categoryLabel}',
+                Text('${config.categoryEmoji} ${config.imageName}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         fontSize: 20,
                         letterSpacing: -0.5)),
                 Text(
-                  '${config.difficulty.label} · '
+                  '${config.categoryLabel} · ${config.difficulty.label} · '
                   '${config.difficulty.gridSize}×${config.difficulty.gridSize}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
@@ -232,112 +245,6 @@ class _PauseOverlay extends StatelessWidget {
             icon: const Icon(Icons.play_arrow_rounded, size: 20),
             label: const Text('Continuar'),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _VictoryOverlay extends StatelessWidget {
-  final PuzzleConfig config;
-  final GameState state;
-  final VoidCallback onRestart;
-
-  const _VictoryOverlay({
-    required this.config,
-    required this.state,
-    required this.onRestart,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return _Overlay(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('🏆', style: TextStyle(fontSize: 52))
-              .animate()
-              .scale(
-                  begin: const Offset(0.4, 0.4),
-                  end: const Offset(1, 1),
-                  curve: Curves.elasticOut,
-                  duration: 700.ms),
-          const SizedBox(height: 12),
-          Text('¡Puzzle completado!',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700, color: AppTheme.accent)),
-          const SizedBox(height: 6),
-          Text(
-            '${config.categoryEmoji} ${config.categoryLabel} · '
-            '${config.difficulty.label}',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _ResultChip(
-                icon: Icons.timer_rounded,
-                value: state.formattedTime,
-                label: 'Tiempo',
-              ),
-              const SizedBox(width: 12),
-              _ResultChip(
-                icon: Icons.swap_horiz_rounded,
-                value: '${state.moves}',
-                label: 'Movimientos',
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: onRestart,
-            icon: const Icon(Icons.replay_rounded, size: 20),
-            label: const Text('Jugar de nuevo'),
-          ),
-          const SizedBox(height: 10),
-          TextButton(
-            onPressed: () => context.go(AppRoutes.home),
-            child: const Text('Volver al inicio',
-                style: TextStyle(color: AppTheme.textMuted)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ResultChip extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-
-  const _ResultChip({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppTheme.surface2,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.border),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: AppTheme.accent, size: 16),
-          const SizedBox(height: 4),
-          Text(value,
-              style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15)),
-          Text(label,
-              style: const TextStyle(color: AppTheme.textMuted, fontSize: 10)),
         ],
       ),
     );
