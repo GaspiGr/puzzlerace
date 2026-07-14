@@ -50,7 +50,7 @@ class PuzzleArt {
         ..close();
       canvas.drawPath(
         path,
-        Paint()..color = shade(30.0 * i, 0.7, 0.5).withOpacity(0.18),
+        Paint()..color = shade(30.0 * i, 0.7, 0.5).withValues(alpha: 0.18),
       );
     }
 
@@ -66,7 +66,8 @@ class PuzzleArt {
         canvas.drawCircle(
           center,
           radius,
-          Paint()..color = color.withOpacity(0.30 + rng.nextDouble() * 0.25),
+          Paint()
+            ..color = color.withValues(alpha: 0.30 + rng.nextDouble() * 0.25),
         );
       } else {
         canvas.drawCircle(
@@ -75,7 +76,7 @@ class PuzzleArt {
           Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = size.shortestSide * 0.015
-            ..color = color.withOpacity(0.45),
+            ..color = color.withValues(alpha: 0.45),
         );
       }
     }
@@ -85,7 +86,10 @@ class PuzzleArt {
       canvas.drawCircle(
         Offset(rng.nextDouble() * size.width, rng.nextDouble() * size.height),
         size.shortestSide * (0.004 + rng.nextDouble() * 0.008),
-        Paint()..color = Colors.white.withOpacity(0.25 + rng.nextDouble() * 0.3),
+        Paint()
+          ..color = Colors.white.withValues(
+            alpha: 0.25 + rng.nextDouble() * 0.3,
+          ),
       );
     }
   }
@@ -148,7 +152,7 @@ class PuzzleTilePainter extends CustomPainter {
         text: TextSpan(
           text: '${tileId + 1}',
           style: TextStyle(
-            color: AppTheme.textPrimary.withOpacity(0.55),
+            color: AppTheme.textPrimary.withValues(alpha: 0.55),
             fontSize: size.shortestSide * 0.16,
             fontWeight: FontWeight.w700,
           ),

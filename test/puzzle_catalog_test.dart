@@ -4,7 +4,12 @@ import 'package:proyecto_puzzlerace/core/data/puzzle_catalog.dart';
 void main() {
   group('PuzzleCatalog', () {
     const expectedCategories = [
-      'naturaleza', 'ciudades', 'arte', 'animales', 'gastronomia', 'espacio',
+      'naturaleza',
+      'ciudades',
+      'arte',
+      'animales',
+      'gastronomia',
+      'espacio',
     ];
 
     test('cubre las 6 categorías de la app', () {
@@ -13,8 +18,11 @@ void main() {
 
     test('cada categoría tiene al menos 6 imágenes', () {
       for (final id in expectedCategories) {
-        expect(PuzzleCatalog.forCategory(id).length, greaterThanOrEqualTo(6),
-            reason: 'categoría $id');
+        expect(
+          PuzzleCatalog.forCategory(id).length,
+          greaterThanOrEqualTo(6),
+          reason: 'categoría $id',
+        );
       }
     });
 

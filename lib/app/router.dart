@@ -32,7 +32,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'category',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>? ?? {};
-          final mode  = extra['mode'] as String? ?? 'solo';
+          final mode = extra['mode'] as String? ?? 'solo';
           return CategoryScreen(mode: mode);
         },
       ),
@@ -46,8 +46,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             categoryId: extra['categoryId'] as String? ?? 'naturaleza',
             categoryLabel: extra['categoryLabel'] as String? ?? 'Naturaleza',
             categoryEmoji: extra['categoryEmoji'] as String? ?? '🌿',
-            categoryColor: extra['categoryColor'] as Color? ??
-                const Color(0xFF40F080),
+            categoryColor:
+                extra['categoryColor'] as Color? ?? const Color(0xFF40F080),
           );
         },
       ),
@@ -63,8 +63,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             categoryId: categoryId,
             categoryLabel: extra['categoryLabel'] as String? ?? 'Naturaleza',
             categoryEmoji: extra['categoryEmoji'] as String? ?? '🌿',
-            categoryColor: extra['categoryColor'] as Color? ??
-                const Color(0xFF40F080),
+            categoryColor:
+                extra['categoryColor'] as Color? ?? const Color(0xFF40F080),
             imageId: extra['imageId'] as String? ?? fallbackImage.id,
             imageName: extra['imageName'] as String? ?? fallbackImage.name,
             imageSeed: extra['imageSeed'] as int? ?? fallbackImage.seed,

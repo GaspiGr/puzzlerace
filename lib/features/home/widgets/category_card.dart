@@ -39,9 +39,9 @@ class _CategoryCardState extends State<CategoryCard> {
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: widget.color.withOpacity(0.07),
+            color: widget.color.withValues(alpha: 0.07),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: widget.color.withOpacity(0.25)),
+            border: Border.all(color: widget.color.withValues(alpha: 0.25)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,33 +55,41 @@ class _CategoryCardState extends State<CategoryCard> {
                   Icon(
                     Icons.arrow_forward_rounded,
                     size: 16,
-                    color: widget.color.withOpacity(0.6),
+                    color: widget.color.withValues(alpha: 0.6),
                   ),
                 ],
               ),
 
-              // Label + count
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.label,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
+              // Label + count. Flexible + FittedBox: en celdas muy bajas el
+              // bloque se encoge en lugar de desbordar la tarjeta.
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.bottomLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        widget.label,
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.count,
+                        style: TextStyle(
+                          color: widget.color.withValues(alpha: 0.8),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    widget.count,
-                    style: TextStyle(
-                      color: widget.color.withOpacity(0.8),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),

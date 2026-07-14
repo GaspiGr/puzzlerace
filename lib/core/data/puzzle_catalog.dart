@@ -10,11 +10,7 @@ class PuzzleImage {
   final String name;
   final int seed;
 
-  const PuzzleImage({
-    required this.id,
-    required this.name,
-    required this.seed,
-  });
+  const PuzzleImage({required this.id, required this.name, required this.seed});
 }
 
 class PuzzleCatalog {
