@@ -236,7 +236,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 1.55,
+              childAspectRatio: 1.25,
             ),
             itemCount: categories.length,
             itemBuilder: (context, i) {

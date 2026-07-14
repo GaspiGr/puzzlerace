@@ -15,8 +15,6 @@ class ResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final config = result.config;
-
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Stack(
@@ -34,75 +32,88 @@ class ResultsScreen extends StatelessWidget {
             ),
           ),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const Spacer(),
-                  const Text(
-                    '🏆',
-                    style: TextStyle(fontSize: 64),
-                  ).animate().scale(
-                    begin: const Offset(0.3, 0.3),
-                    end: const Offset(1, 1),
-                    curve: Curves.elasticOut,
-                    duration: 800.ms,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '¡Puzzle completado!',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      color: AppTheme.accent,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.5,
+            // Desplazable si el contenido no cabe (pantallas bajas); en
+            // pantallas altas los Spacer siguen centrando el contenido.
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: _buildContent(context),
                     ),
-                  ).animate().fadeIn(delay: 150.ms),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${config.categoryEmoji} ${config.imageName} · '
-                    '${config.difficulty.label} '
-                    '${config.difficulty.gridSize}×${config.difficulty.gridSize}',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ).animate().fadeIn(delay: 220.ms),
-                  const SizedBox(height: 24),
-                  _buildArtPreview(config).animate().fadeIn(delay: 280.ms),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _ResultStat(
-                          icon: Icons.timer_rounded,
-                          value: result.formattedTime,
-                          label: 'Tiempo',
-                          color: AppTheme.accent,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _ResultStat(
-                          icon: Icons.swap_horiz_rounded,
-                          value: '${result.moves}',
-                          label: 'Movimientos',
-                          color: AppTheme.accentBlue,
-                        ),
-                      ),
-                    ],
-                  ).animate().fadeIn(delay: 350.ms),
-                  const SizedBox(height: 14),
-                  _buildRecordBanner(context).animate().fadeIn(delay: 420.ms),
-                  const Spacer(),
-                  _buildActions(context)
-                      .animate()
-                      .fadeIn(delay: 500.ms)
-                      .slideY(begin: 0.2, end: 0, delay: 500.ms),
-                  const SizedBox(height: 24),
-                ],
+                  ),
+                ),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    final config = result.config;
+    return Column(
+      children: [
+        const Spacer(),
+        const Text('🏆', style: TextStyle(fontSize: 64)).animate().scale(
+          begin: const Offset(0.3, 0.3),
+          end: const Offset(1, 1),
+          curve: Curves.elasticOut,
+          duration: 800.ms,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          '¡Puzzle completado!',
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+            color: AppTheme.accent,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
+          ),
+        ).animate().fadeIn(delay: 150.ms),
+        const SizedBox(height: 6),
+        Text(
+          '${config.categoryEmoji} ${config.imageName} · '
+          '${config.difficulty.label} '
+          '${config.difficulty.gridSize}×${config.difficulty.gridSize}',
+          style: Theme.of(context).textTheme.bodyMedium,
+          textAlign: TextAlign.center,
+        ).animate().fadeIn(delay: 220.ms),
+        const SizedBox(height: 24),
+        _buildArtPreview(config).animate().fadeIn(delay: 280.ms),
+        const SizedBox(height: 24),
+        Row(
+          children: [
+            Expanded(
+              child: _ResultStat(
+                icon: Icons.timer_rounded,
+                value: result.formattedTime,
+                label: 'Tiempo',
+                color: AppTheme.accent,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _ResultStat(
+                icon: Icons.swap_horiz_rounded,
+                value: '${result.moves}',
+                label: 'Movimientos',
+                color: AppTheme.accentBlue,
+              ),
+            ),
+          ],
+        ).animate().fadeIn(delay: 350.ms),
+        const SizedBox(height: 14),
+        _buildRecordBanner(context).animate().fadeIn(delay: 420.ms),
+        const Spacer(),
+        _buildActions(context)
+            .animate()
+            .fadeIn(delay: 500.ms)
+            .slideY(begin: 0.2, end: 0, delay: 500.ms),
+        const SizedBox(height: 24),
+      ],
     );
   }
 
