@@ -4,6 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../core/constants/app_routes.dart';
+import '../../../core/data/categories.dart';
+import '../../../core/data/puzzle_catalog.dart';
+import '../../profile/providers/profile_provider.dart';
+import '../../profile/screens/profile_view.dart';
 import '../../stats/providers/stats_provider.dart';
 import '../widgets/category_card.dart';
 import '../widgets/mode_button.dart';
@@ -29,8 +33,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: CustomScrollView(
+      body: SafeArea(child: _buildTabBody(context)),
+      bottomNavigationBar: _buildBottomNav(context),
+    );
+  }
+
+  Widget _buildTabBody(BuildContext context) {
+    switch (_selectedTab) {
+      case 1:
+        return const _RankingPlaceholder();
+      case 2:
+        return const ProfileView();
+      default:
+        return CustomScrollView(
           slivers: [
             SliverToBoxAdapter(child: _buildHeader(context)),
             SliverToBoxAdapter(child: _buildModeSection(context)),
@@ -38,13 +53,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             SliverToBoxAdapter(child: _buildCategoriesSection(context)),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNav(context),
-    );
+        );
+    }
   }
 
   Widget _buildHeader(BuildContext context) {
+    final name = ref.watch(profileNameProvider);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Row(
@@ -53,7 +67,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('¡Hola, Jugador! 👋',
+                Text('¡Hola, $name! 👋',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.2, end: 0),
                 const SizedBox(height: 2),
@@ -144,12 +160,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildCategoriesSection(BuildContext context) {
-    final categories = [
-      const _CategoryData(emoji: '🌿', label: 'Naturaleza', count: '120+ puzzles', color: Color(0xFF40F080)),
-      const _CategoryData(emoji: '🏙️', label: 'Ciudades',   count: '98+ puzzles',  color: AppTheme.accentBlue),
-      const _CategoryData(emoji: '🎨', label: 'Arte',        count: '75+ puzzles',  color: Color(0xFFA060F0)),
-      const _CategoryData(emoji: '🐾', label: 'Animales',    count: '110+ puzzles', color: AppTheme.accentOrange),
-    ];
+    // Muestra las primeras 4 categorías del modelo compartido; la pantalla
+    // de categorías las lista todas.
+    final categories = AppCategories.all.take(4).toList();
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
       child: Column(
@@ -169,9 +182,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               final cat = categories[i];
               return CategoryCard(
                 emoji: cat.emoji, label: cat.label,
-                count: cat.count, color: cat.color,
-                onTap: () => context.push(AppRoutes.category,
-                  extra: {'mode': 'solo'}),
+                count: '${PuzzleCatalog.forCategory(cat.id).length} puzzles',
+                color: cat.color,
+                onTap: () => context.push(AppRoutes.images, extra: {
+                  'mode': 'solo',
+                  'categoryId': cat.id,
+                  'categoryLabel': cat.label,
+                  'categoryEmoji': cat.emoji,
+                  'categoryColor': cat.color,
+                }),
               ).animate()
                 .fadeIn(delay: (700 + i * 80).ms)
                 .slideY(begin: 0.15, end: 0, delay: (700 + i * 80).ms);
@@ -226,11 +245,39 @@ class _TabItem {
   const _TabItem({required this.icon, required this.label});
 }
 
-class _CategoryData {
-  final String emoji, label, count;
-  final Color color;
-  const _CategoryData({required this.emoji, required this.label,
-    required this.count, required this.color});
+/// Placeholder del tab Ranking (ítem 14 pendiente: requiere backend).
+class _RankingPlaceholder extends StatelessWidget {
+  const _RankingPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80, height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppTheme.accentBlue.withOpacity(0.1),
+              border: Border.all(color: AppTheme.accentBlue.withOpacity(0.3)),
+            ),
+            child: const Icon(Icons.leaderboard_rounded,
+                color: AppTheme.accentBlue, size: 34),
+          ).animate().fadeIn(duration: 300.ms).scale(
+              begin: const Offset(0.8, 0.8), end: const Offset(1, 1)),
+          const SizedBox(height: 18),
+          Text('Ranking global',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w700)).animate().fadeIn(delay: 100.ms),
+          const SizedBox(height: 6),
+          Text('Disponible cuando llegue el modo online',
+              style: Theme.of(context).textTheme.bodyMedium)
+              .animate().fadeIn(delay: 180.ms),
+        ],
+      ),
+    );
+  }
 }
 
 class _SectionTitle extends StatelessWidget {

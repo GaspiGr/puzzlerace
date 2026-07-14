@@ -88,5 +88,60 @@ void main() {
       expect(restored.state.wins, 1);
       expect(restored.state.bestTimes[Difficulty.easy], 95);
     });
+
+    test('cada victoria se añade al historial, la más reciente primero', () {
+      notifier.recordWin(Difficulty.easy, 90,
+          moves: 12, categoryEmoji: '🌿', categoryLabel: 'Naturaleza');
+      notifier.recordWin(Difficulty.hard, 300,
+          moves: 60, categoryEmoji: '🚀', categoryLabel: 'Espacio');
+
+      final history = notifier.state.history;
+      expect(history.length, 2);
+      expect(history.first.categoryLabel, 'Espacio');
+      expect(history.first.difficulty, Difficulty.hard);
+      expect(history.first.moves, 60);
+      expect(history.last.categoryLabel, 'Naturaleza');
+    });
+
+    test('el historial se limita a las últimas ${PlayerStats.historyLimit}',
+        () {
+      for (var i = 0; i < PlayerStats.historyLimit + 5; i++) {
+        notifier.recordWin(Difficulty.easy, 100 + i, moves: i);
+      }
+      expect(notifier.state.history.length, PlayerStats.historyLimit);
+      // La más reciente es la última registrada.
+      expect(notifier.state.history.first.moves,
+          PlayerStats.historyLimit + 4);
+    });
+
+    test('el historial persiste entre sesiones', () {
+      notifier.recordWin(Difficulty.medium, 120,
+          moves: 25, categoryEmoji: '🎨', categoryLabel: 'Arte');
+
+      final restored = StatsNotifier(prefs);
+      expect(restored.state.history.length, 1);
+      expect(restored.state.history.first.categoryLabel, 'Arte');
+      expect(restored.state.history.first.seconds, 120);
+      expect(restored.state.history.first.difficulty, Difficulty.medium);
+    });
+
+    test('un historial corrupto se descarta sin romper el resto', () async {
+      SharedPreferences.setMockInitialValues({
+        'stats.wins': 3,
+        'stats.history': 'esto-no-es-json',
+      });
+      final corruptPrefs = await SharedPreferences.getInstance();
+      final restored = StatsNotifier(corruptPrefs);
+      expect(restored.state.wins, 3);
+      expect(restored.state.history, isEmpty);
+    });
+  });
+
+  group('PlayerStats.winRate', () {
+    test('calcula el porcentaje de partidas completadas', () {
+      expect(const PlayerStats().winRate, 0);
+      expect(const PlayerStats(gamesPlayed: 4, wins: 2).winRate, 50);
+      expect(const PlayerStats(gamesPlayed: 3, wins: 3).winRate, 100);
+    });
   });
 }

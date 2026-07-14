@@ -46,7 +46,13 @@ class GameNotifier extends StateNotifier<GameState> {
     final tiles = PuzzleEngine.swap(state.tiles, selected, index);
     if (PuzzleEngine.isSolved(tiles)) {
       _timer?.cancel();
-      final outcome = _stats.recordWin(config.difficulty, state.seconds);
+      final outcome = _stats.recordWin(
+        config.difficulty,
+        state.seconds,
+        moves: state.moves + 1,
+        categoryEmoji: config.categoryEmoji,
+        categoryLabel: config.categoryLabel,
+      );
       state = GameState(
         tiles: tiles,
         moves: state.moves + 1,

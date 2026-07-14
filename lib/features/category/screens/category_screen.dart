@@ -3,19 +3,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../core/constants/app_routes.dart';
+import '../../../core/data/categories.dart';
+import '../../../core/data/puzzle_catalog.dart';
+import '../../../core/models/puzzle_category.dart';
 
 class CategoryScreen extends StatelessWidget {
   final String mode;
   const CategoryScreen({super.key, required this.mode});
-
-  static const List<_CategoryItem> _categories = [
-    _CategoryItem(emoji: '🌿', label: 'Naturaleza',   description: 'Bosques, montañas, océanos y más', count: 120, color: Color(0xFF40F080), bgColor: Color(0xFF0D2B1A), id: 'naturaleza'),
-    _CategoryItem(emoji: '🏙️', label: 'Ciudades',     description: 'Paisajes urbanos del mundo',       count: 98,  color: Color(0xFF40B0F0), bgColor: Color(0xFF0D1E2B), id: 'ciudades'),
-    _CategoryItem(emoji: '🎨', label: 'Arte',          description: 'Pinturas, ilustraciones y diseño', count: 75,  color: Color(0xFFA060F0), bgColor: Color(0xFF1A0D2B), id: 'arte'),
-    _CategoryItem(emoji: '🐾', label: 'Animales',      description: 'Fauna de todo el planeta',         count: 110, color: Color(0xFFE06030), bgColor: Color(0xFF2B150D), id: 'animales'),
-    _CategoryItem(emoji: '🍜', label: 'Gastronomía',   description: 'Platos y cocinas del mundo',       count: 64,  color: Color(0xFFF0C040), bgColor: Color(0xFF2B220D), id: 'gastronomia'),
-    _CategoryItem(emoji: '🚀', label: 'Espacio',       description: 'Galaxias, planetas y nebulosas',   count: 52,  color: Color(0xFF60D0C0), bgColor: Color(0xFF0D2228), id: 'espacio'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -121,9 +115,9 @@ class CategoryScreen extends StatelessWidget {
           crossAxisCount: 2, mainAxisSpacing: 14,
           crossAxisSpacing: 14, childAspectRatio: 0.88,
         ),
-        itemCount: _categories.length,
+        itemCount: AppCategories.all.length,
         itemBuilder: (context, i) {
-          final cat = _categories[i];
+          final cat = AppCategories.all[i];
           return _CategoryCard(
             category: cat,
             onTap: () => context.push(AppRoutes.images, extra: {
@@ -144,7 +138,7 @@ class CategoryScreen extends StatelessWidget {
 }
 
 class _CategoryCard extends StatefulWidget {
-  final _CategoryItem category;
+  final PuzzleCategory category;
   final VoidCallback onTap;
   const _CategoryCard({required this.category, required this.onTap});
 
@@ -223,7 +217,8 @@ class _CategoryCardState extends State<_CategoryCard> {
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(color: cat.color.withOpacity(0.25)),
                       ),
-                      child: Text('${cat.count}+ puzzles',
+                      child: Text(
+                        '${PuzzleCatalog.forCategory(cat.id).length} puzzles',
                         style: TextStyle(color: cat.color, fontSize: 10,
                           fontWeight: FontWeight.w600)),
                     ),
@@ -238,11 +233,3 @@ class _CategoryCardState extends State<_CategoryCard> {
   }
 }
 
-class _CategoryItem {
-  final String emoji, label, description, id;
-  final int count;
-  final Color color, bgColor;
-  const _CategoryItem({required this.emoji, required this.label,
-    required this.description, required this.count, required this.color,
-    required this.bgColor, required this.id});
-}
