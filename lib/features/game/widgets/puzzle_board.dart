@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../../../app/theme.dart';
 import '../models/puzzle_models.dart';
@@ -10,11 +11,15 @@ class PuzzleBoard extends StatelessWidget {
   final GameState state;
   final ValueChanged<int> onTileTap;
 
+  /// Foto decodificada del dispositivo; nula = arte procedural.
+  final ui.Image? image;
+
   const PuzzleBoard({
     super.key,
     required this.config,
     required this.state,
     required this.onTileTap,
+    this.image,
   });
 
   @override
@@ -42,6 +47,7 @@ class PuzzleBoard extends StatelessWidget {
             return _PuzzleTile(
               tileId: tileId,
               config: config,
+              image: image,
               isSelected: state.selectedIndex == slot,
               isCorrect: tileId == slot,
               onTap: () => onTileTap(slot),
@@ -56,6 +62,7 @@ class PuzzleBoard extends StatelessWidget {
 class _PuzzleTile extends StatelessWidget {
   final int tileId;
   final PuzzleConfig config;
+  final ui.Image? image;
   final bool isSelected;
   final bool isCorrect;
   final VoidCallback onTap;
@@ -63,6 +70,7 @@ class _PuzzleTile extends StatelessWidget {
   const _PuzzleTile({
     required this.tileId,
     required this.config,
+    required this.image,
     required this.isSelected,
     required this.isCorrect,
     required this.onTap,
@@ -96,6 +104,7 @@ class _PuzzleTile extends StatelessWidget {
                 gridSize: config.difficulty.gridSize,
                 baseColor: config.categoryColor,
                 seed: config.artSeed,
+                image: image,
               ),
               child: const SizedBox.expand(),
             ),

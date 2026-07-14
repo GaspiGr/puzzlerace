@@ -68,6 +68,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             imageId: extra['imageId'] as String? ?? fallbackImage.id,
             imageName: extra['imageName'] as String? ?? fallbackImage.name,
             imageSeed: extra['imageSeed'] as int? ?? fallbackImage.seed,
+            imageFilePath: extra['imageFilePath'] as String?,
           );
         },
       ),

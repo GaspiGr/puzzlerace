@@ -66,5 +66,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>PuzzleRace necesita acceso a tus fotos para que elijas una imagen y armarla como puzzle.</string>
 </dict>
 </plist>
