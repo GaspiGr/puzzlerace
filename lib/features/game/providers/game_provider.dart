@@ -9,7 +9,9 @@ class GameNotifier extends StateNotifier<GameState> {
       : super(GameState(
           tiles: PuzzleEngine.createShuffled(config.difficulty.tileCount),
         )) {
-    _stats.recordGameStarted();
+    // Diferido a un microtask: Riverpod no permite modificar otro provider
+    // (statsProvider) mientras este provider todavía se está inicializando.
+    Future.microtask(_stats.recordGameStarted);
     _startTimer();
   }
 
