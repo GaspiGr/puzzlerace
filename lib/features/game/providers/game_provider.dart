@@ -6,9 +6,11 @@ import '../models/puzzle_models.dart';
 
 class GameNotifier extends StateNotifier<GameState> {
   GameNotifier(this.config, this._stats)
-      : super(GameState(
+    : super(
+        GameState(
           tiles: PuzzleEngine.createShuffled(config.difficulty.tileCount),
-        )) {
+        ),
+      ) {
     // Diferido a un microtask: Riverpod no permite modificar otro provider
     // (statsProvider) mientras este provider todavía se está inicializando.
     Future.microtask(_stats.recordGameStarted);
@@ -97,5 +99,5 @@ class GameNotifier extends StateNotifier<GameState> {
 
 final gameProvider = StateNotifierProvider.autoDispose
     .family<GameNotifier, GameState, PuzzleConfig>(
-  (ref, config) => GameNotifier(config, ref.read(statsProvider.notifier)),
-);
+      (ref, config) => GameNotifier(config, ref.read(statsProvider.notifier)),
+    );

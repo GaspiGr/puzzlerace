@@ -24,8 +24,9 @@ Future<void> pumpResults(WidgetTester tester, GameResult result) async {
 }
 
 void main() {
-  testWidgets('muestra tiempo, movimientos y la partida jugada',
-      (tester) async {
+  testWidgets('muestra tiempo, movimientos y la partida jugada', (
+    tester,
+  ) async {
     await pumpResults(
       tester,
       const GameResult(
@@ -77,8 +78,9 @@ void main() {
     expect(find.textContaining('01:20'), findsOneWidget);
   });
 
-  testWidgets('la primera victoria se anuncia como primer tiempo',
-      (tester) async {
+  testWidgets('la primera victoria se anuncia como primer tiempo', (
+    tester,
+  ) async {
     await pumpResults(
       tester,
       const GameResult(

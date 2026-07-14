@@ -15,11 +15,13 @@ void main() {
     });
 
     test('bestOverallSeconds es el mínimo entre dificultades', () {
-      const stats = PlayerStats(bestTimes: {
-        Difficulty.easy: 90,
-        Difficulty.medium: 45,
-        Difficulty.hard: 200,
-      });
+      const stats = PlayerStats(
+        bestTimes: {
+          Difficulty.easy: 90,
+          Difficulty.medium: 45,
+          Difficulty.hard: 200,
+        },
+      );
       expect(stats.bestOverallSeconds, 45);
       expect(const PlayerStats().bestOverallSeconds, isNull);
       expect(const PlayerStats().formattedBestOverall, '--');
@@ -90,10 +92,20 @@ void main() {
     });
 
     test('cada victoria se añade al historial, la más reciente primero', () {
-      notifier.recordWin(Difficulty.easy, 90,
-          moves: 12, categoryEmoji: '🌿', categoryLabel: 'Naturaleza');
-      notifier.recordWin(Difficulty.hard, 300,
-          moves: 60, categoryEmoji: '🚀', categoryLabel: 'Espacio');
+      notifier.recordWin(
+        Difficulty.easy,
+        90,
+        moves: 12,
+        categoryEmoji: '🌿',
+        categoryLabel: 'Naturaleza',
+      );
+      notifier.recordWin(
+        Difficulty.hard,
+        300,
+        moves: 60,
+        categoryEmoji: '🚀',
+        categoryLabel: 'Espacio',
+      );
 
       final history = notifier.state.history;
       expect(history.length, 2);
@@ -103,20 +115,29 @@ void main() {
       expect(history.last.categoryLabel, 'Naturaleza');
     });
 
-    test('el historial se limita a las últimas ${PlayerStats.historyLimit}',
-        () {
-      for (var i = 0; i < PlayerStats.historyLimit + 5; i++) {
-        notifier.recordWin(Difficulty.easy, 100 + i, moves: i);
-      }
-      expect(notifier.state.history.length, PlayerStats.historyLimit);
-      // La más reciente es la última registrada.
-      expect(notifier.state.history.first.moves,
-          PlayerStats.historyLimit + 4);
-    });
+    test(
+      'el historial se limita a las últimas ${PlayerStats.historyLimit}',
+      () {
+        for (var i = 0; i < PlayerStats.historyLimit + 5; i++) {
+          notifier.recordWin(Difficulty.easy, 100 + i, moves: i);
+        }
+        expect(notifier.state.history.length, PlayerStats.historyLimit);
+        // La más reciente es la última registrada.
+        expect(
+          notifier.state.history.first.moves,
+          PlayerStats.historyLimit + 4,
+        );
+      },
+    );
 
     test('el historial persiste entre sesiones', () {
-      notifier.recordWin(Difficulty.medium, 120,
-          moves: 25, categoryEmoji: '🎨', categoryLabel: 'Arte');
+      notifier.recordWin(
+        Difficulty.medium,
+        120,
+        moves: 25,
+        categoryEmoji: '🎨',
+        categoryLabel: 'Arte',
+      );
 
       final restored = StatsNotifier(prefs);
       expect(restored.state.history.length, 1);

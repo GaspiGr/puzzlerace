@@ -83,8 +83,8 @@ class _PuzzleTile extends StatelessWidget {
               color: isSelected
                   ? AppTheme.accent
                   : isCorrect
-                      ? config.categoryColor.withOpacity(0.55)
-                      : AppTheme.border,
+                  ? config.categoryColor.withValues(alpha: 0.55)
+                  : AppTheme.border,
               width: isSelected ? 2.5 : 1,
             ),
           ),

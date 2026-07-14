@@ -9,7 +9,10 @@ void main() {
       for (final difficulty in Difficulty.values) {
         final tiles = PuzzleEngine.createShuffled(difficulty.tileCount);
         expect(tiles.length, difficulty.tileCount);
-        expect(tiles.toSet(), Set.of(List.generate(difficulty.tileCount, (i) => i)));
+        expect(
+          tiles.toSet(),
+          Set.of(List.generate(difficulty.tileCount, (i) => i)),
+        );
       }
     });
 
@@ -56,8 +59,14 @@ void main() {
   group('GameState', () {
     test('formattedTime formatea minutos y segundos', () {
       expect(const GameState(tiles: [1, 0], seconds: 0).formattedTime, '00:00');
-      expect(const GameState(tiles: [1, 0], seconds: 65).formattedTime, '01:05');
-      expect(const GameState(tiles: [1, 0], seconds: 600).formattedTime, '10:00');
+      expect(
+        const GameState(tiles: [1, 0], seconds: 65).formattedTime,
+        '01:05',
+      );
+      expect(
+        const GameState(tiles: [1, 0], seconds: 600).formattedTime,
+        '10:00',
+      );
     });
   });
 }

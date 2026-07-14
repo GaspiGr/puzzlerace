@@ -17,8 +17,7 @@ class GameScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Al completar el puzzle se navega a la pantalla de resultados.
     ref.listen(gameProvider(config), (previous, next) {
-      if (previous?.status != GameStatus.won &&
-          next.status == GameStatus.won) {
+      if (previous?.status != GameStatus.won && next.status == GameStatus.won) {
         context.pushReplacement(
           AppRoutes.results,
           extra: GameResult(
@@ -47,13 +46,18 @@ class GameScreen extends ConsumerWidget {
                 const Spacer(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: PuzzleBoard(
-                    config: config,
-                    state: state,
-                    onTileTap: notifier.tapTile,
-                  ).animate().fadeIn(duration: 400.ms).scale(
-                      begin: const Offset(0.95, 0.95),
-                      end: const Offset(1, 1)),
+                  child:
+                      PuzzleBoard(
+                            config: config,
+                            state: state,
+                            onTileTap: notifier.tapTile,
+                          )
+                          .animate()
+                          .fadeIn(duration: 400.ms)
+                          .scale(
+                            begin: const Offset(0.95, 0.95),
+                            end: const Offset(1, 1),
+                          ),
                 ),
                 const Spacer(),
                 _buildFooterHint(context, state),
@@ -81,13 +85,16 @@ class GameScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${config.categoryEmoji} ${config.imageName}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
-                        letterSpacing: -0.5)),
+                Text(
+                  '${config.categoryEmoji} ${config.imageName}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                    letterSpacing: -0.5,
+                  ),
+                ),
                 Text(
                   '${config.categoryLabel} · ${config.difficulty.label} · '
                   '${config.difficulty.gridSize}×${config.difficulty.gridSize}',
@@ -183,14 +190,19 @@ class _GameStat extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 18),
           const SizedBox(height: 5),
-          Text(value,
-              style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15)),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+            ),
+          ),
           const SizedBox(height: 1),
-          Text(label,
-              style: const TextStyle(color: AppTheme.textMuted, fontSize: 10)),
+          Text(
+            label,
+            style: const TextStyle(color: AppTheme.textMuted, fontSize: 10),
+          ),
         ],
       ),
     );
@@ -230,15 +242,23 @@ class _PauseOverlay extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.pause_circle_rounded,
-              color: AppTheme.accent, size: 56),
+          const Icon(
+            Icons.pause_circle_rounded,
+            color: AppTheme.accent,
+            size: 56,
+          ),
           const SizedBox(height: 14),
-          Text('Pausa',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700)),
+          Text(
+            'Pausa',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 6),
-          Text('El tiempo está detenido',
-              style: Theme.of(context).textTheme.bodyMedium),
+          Text(
+            'El tiempo está detenido',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           const SizedBox(height: 22),
           ElevatedButton.icon(
             onPressed: onResume,
@@ -259,19 +279,25 @@ class _Overlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: Container(
-        color: AppTheme.background.withOpacity(0.82),
+        color: AppTheme.background.withValues(alpha: 0.82),
         alignment: Alignment.center,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 32),
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppTheme.border),
-          ),
-          child: child,
-        ).animate().fadeIn(duration: 250.ms).scale(
-            begin: const Offset(0.92, 0.92), end: const Offset(1, 1)),
+        child:
+            Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: AppTheme.border),
+                  ),
+                  child: child,
+                )
+                .animate()
+                .fadeIn(duration: 250.ms)
+                .scale(
+                  begin: const Offset(0.92, 0.92),
+                  end: const Offset(1, 1),
+                ),
       ),
     );
   }

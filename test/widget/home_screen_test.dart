@@ -23,14 +23,19 @@ Future<Widget> buildHome({Map<String, Object> prefsValues = const {}}) async {
 }
 
 void main() {
-  testWidgets('muestra el saludo, los modos y las estadísticas guardadas',
-      (tester) async {
+  testWidgets('muestra el saludo, los modos y las estadísticas guardadas', (
+    tester,
+  ) async {
     usePhoneSurface(tester);
-    await tester.pumpWidget(await buildHome(prefsValues: {
-      'stats.wins': 5,
-      'stats.gamesPlayed': 12,
-      'stats.bestTime.easy': 83,
-    }));
+    await tester.pumpWidget(
+      await buildHome(
+        prefsValues: {
+          'stats.wins': 5,
+          'stats.gamesPlayed': 12,
+          'stats.bestTime.easy': 83,
+        },
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('¡Hola, Jugador! 👋'), findsOneWidget);
@@ -42,8 +47,9 @@ void main() {
     expect(find.text('01:23'), findsOneWidget);
   });
 
-  testWidgets('sin datos previos las estadísticas están en cero',
-      (tester) async {
+  testWidgets('sin datos previos las estadísticas están en cero', (
+    tester,
+  ) async {
     usePhoneSurface(tester);
     await tester.pumpWidget(await buildHome());
     await tester.pumpAndSettle();
@@ -68,15 +74,20 @@ void main() {
     expect(find.text('Aún no completas ningún puzzle'), findsOneWidget);
   });
 
-  testWidgets('el perfil muestra los mejores tiempos por dificultad',
-      (tester) async {
+  testWidgets('el perfil muestra los mejores tiempos por dificultad', (
+    tester,
+  ) async {
     usePhoneSurface(tester);
-    await tester.pumpWidget(await buildHome(prefsValues: {
-      'stats.wins': 2,
-      'stats.gamesPlayed': 4,
-      'stats.bestTime.easy': 65,
-      'stats.bestTime.hard': 305,
-    }));
+    await tester.pumpWidget(
+      await buildHome(
+        prefsValues: {
+          'stats.wins': 2,
+          'stats.gamesPlayed': 4,
+          'stats.bestTime.easy': 65,
+          'stats.bestTime.hard': 305,
+        },
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Perfil'));
@@ -98,6 +109,8 @@ void main() {
 
     expect(find.text('Ranking global'), findsOneWidget);
     expect(
-        find.text('Disponible cuando llegue el modo online'), findsOneWidget);
+      find.text('Disponible cuando llegue el modo online'),
+      findsOneWidget,
+    );
   });
 }

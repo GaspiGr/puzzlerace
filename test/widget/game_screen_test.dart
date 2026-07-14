@@ -31,10 +31,12 @@ void main() {
     addTearDown(tester.view.reset);
 
     final prefs = await mockPrefs();
-    await tester.pumpWidget(ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-      child: const MaterialApp(home: GameScreen(config: testConfig)),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: const MaterialApp(home: GameScreen(config: testConfig)),
+      ),
+    );
     // Sin pumpAndSettle: el cronómetro de la partida programa frames
     // continuamente y nunca "asentaría".
     await tester.pump(const Duration(milliseconds: 700));
@@ -46,8 +48,9 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('el tablero muestra todas las piezas de la dificultad',
-      (tester) async {
+  testWidgets('el tablero muestra todas las piezas de la dificultad', (
+    tester,
+  ) async {
     await pumpGame(tester);
 
     final tiles = find.descendant(
@@ -62,8 +65,9 @@ void main() {
     await tearDownGame(tester);
   });
 
-  testWidgets('seleccionar y deseleccionar una pieza actualiza la ayuda',
-      (tester) async {
+  testWidgets('seleccionar y deseleccionar una pieza actualiza la ayuda', (
+    tester,
+  ) async {
     await pumpGame(tester);
 
     expect(find.text('Toca una pieza para seleccionarla'), findsOneWidget);
@@ -84,8 +88,7 @@ void main() {
     await tearDownGame(tester);
   });
 
-  testWidgets('pausar congela la partida y muestra el overlay',
-      (tester) async {
+  testWidgets('pausar congela la partida y muestra el overlay', (tester) async {
     await pumpGame(tester);
 
     await tester.tap(find.byIcon(Icons.pause_rounded));
@@ -101,21 +104,26 @@ void main() {
     await tearDownGame(tester);
   });
 
-  testWidgets('iniciar una partida la registra en las estadísticas',
-      (tester) async {
+  testWidgets('iniciar una partida la registra en las estadísticas', (
+    tester,
+  ) async {
     final prefs = await mockPrefs();
     tester.view.physicalSize = const Size(1080, 2340);
     tester.view.devicePixelRatio = 3.0;
     addTearDown(tester.view.reset);
 
     late ProviderContainer container;
-    await tester.pumpWidget(ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-      child: Consumer(builder: (context, ref, child) {
-        container = ProviderScope.containerOf(context);
-        return const MaterialApp(home: GameScreen(config: testConfig));
-      }),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: Consumer(
+          builder: (context, ref, child) {
+            container = ProviderScope.containerOf(context);
+            return const MaterialApp(home: GameScreen(config: testConfig));
+          },
+        ),
+      ),
+    );
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(container.read(statsProvider).gamesPlayed, 1);

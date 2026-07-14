@@ -19,20 +19,20 @@ class GameHistoryEntry {
   });
 
   Map<String, dynamic> toJson() => {
-        'categoryEmoji': categoryEmoji,
-        'categoryLabel': categoryLabel,
-        'difficulty': difficulty.name,
-        'seconds': seconds,
-        'moves': moves,
-        'date': date.toIso8601String(),
-      };
+    'categoryEmoji': categoryEmoji,
+    'categoryLabel': categoryLabel,
+    'difficulty': difficulty.name,
+    'seconds': seconds,
+    'moves': moves,
+    'date': date.toIso8601String(),
+  };
 
   factory GameHistoryEntry.fromJson(Map<String, dynamic> json) {
     return GameHistoryEntry(
       categoryEmoji: json['categoryEmoji'] as String? ?? '🧩',
       categoryLabel: json['categoryLabel'] as String? ?? 'Puzzle',
-      difficulty: Difficulty.values.asNameMap()[json['difficulty']] ??
-          Difficulty.easy,
+      difficulty:
+          Difficulty.values.asNameMap()[json['difficulty']] ?? Difficulty.easy,
       seconds: json['seconds'] as int? ?? 0,
       moves: json['moves'] as int? ?? 0,
       date: DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now(),
@@ -82,8 +82,9 @@ class PlayerStats {
       gamesPlayed == 0 ? 0 : ((wins / gamesPlayed) * 100).round();
 
   /// Mejor tiempo global entre todas las dificultades, o `null` si no hay.
-  int? get bestOverallSeconds =>
-      bestTimes.values.isEmpty ? null : bestTimes.values.reduce((a, b) => a < b ? a : b);
+  int? get bestOverallSeconds => bestTimes.values.isEmpty
+      ? null
+      : bestTimes.values.reduce((a, b) => a < b ? a : b);
 
   String get formattedBestOverall => formatSeconds(bestOverallSeconds);
 

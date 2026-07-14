@@ -8,7 +8,7 @@ class ProfileNameNotifier extends StateNotifier<String> {
   static const defaultName = 'Jugador';
 
   ProfileNameNotifier(this._prefs)
-      : super(_prefs.getString(_key) ?? defaultName);
+    : super(_prefs.getString(_key) ?? defaultName);
 
   final SharedPreferences _prefs;
 

@@ -77,8 +77,9 @@ Future<Widget> buildApp(GoRouter router) async {
 }
 
 void main() {
-  testWidgets('flujo completo: Home → Categoría → Imagen → Dificultad',
-      (tester) async {
+  testWidgets('flujo completo: Home → Categoría → Imagen → Dificultad', (
+    tester,
+  ) async {
     usePhoneSurface(tester);
     await tester.pumpWidget(await buildApp(buildTestRouter()));
     await tester.pumpAndSettle();
@@ -91,7 +92,12 @@ void main() {
 
     // La pantalla lista las 6 categorías del modelo compartido.
     for (final label in [
-      'Naturaleza', 'Ciudades', 'Arte', 'Animales', 'Gastronomía', 'Espacio',
+      'Naturaleza',
+      'Ciudades',
+      'Arte',
+      'Animales',
+      'Gastronomía',
+      'Espacio',
     ]) {
       expect(find.text(label), findsOneWidget);
     }
@@ -112,8 +118,7 @@ void main() {
     expect(find.text('¡A jugar!'), findsOneWidget);
   });
 
-  testWidgets('el modo 1 vs 1 llega a categorías con su badge',
-      (tester) async {
+  testWidgets('el modo 1 vs 1 llega a categorías con su badge', (tester) async {
     usePhoneSurface(tester);
     await tester.pumpWidget(await buildApp(buildTestRouter()));
     await tester.pumpAndSettle();

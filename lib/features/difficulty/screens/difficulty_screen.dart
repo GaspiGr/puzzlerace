@@ -71,11 +71,12 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
                 itemBuilder: (context, i) {
                   final difficulty = Difficulty.values[i];
                   return _DifficultyCard(
-                    difficulty: difficulty,
-                    color: widget.categoryColor,
-                    isSelected: _selected == difficulty,
-                    onTap: () => setState(() => _selected = difficulty),
-                  ).animate()
+                        difficulty: difficulty,
+                        color: widget.categoryColor,
+                        isSelected: _selected == difficulty,
+                        onTap: () => setState(() => _selected = difficulty),
+                      )
+                      .animate()
                       .fadeIn(delay: (250 + i * 90).ms)
                       .slideY(begin: 0.15, end: 0, delay: (250 + i * 90).ms);
                 },
@@ -103,8 +104,11 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppTheme.border),
               ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: AppTheme.textPrimary, size: 18),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppTheme.textPrimary,
+                size: 18,
+              ),
             ),
           ).animate().fadeIn(duration: 300.ms),
           const SizedBox(width: 14),
@@ -112,18 +116,22 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Elige la dificultad',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 22,
-                        letterSpacing: -0.5))
+                Text(
+                      'Elige la dificultad',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 22,
+                            letterSpacing: -0.5,
+                          ),
+                    )
                     .animate()
                     .fadeIn(delay: 100.ms)
                     .slideX(begin: -0.15, end: 0, delay: 100.ms),
-                Text('¿Qué tan rápido eres armando puzzles?',
-                        style: Theme.of(context).textTheme.bodyMedium)
-                    .animate()
-                    .fadeIn(delay: 180.ms),
+                Text(
+                  '¿Qué tan rápido eres armando puzzles?',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ).animate().fadeIn(delay: 180.ms),
               ],
             ),
           ),
@@ -139,9 +147,9 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.25)),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -149,21 +157,31 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
             Text(widget.categoryEmoji, style: const TextStyle(fontSize: 15)),
             const SizedBox(width: 8),
             Flexible(
-              child: Text(widget.imageName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      color: color, fontSize: 13, fontWeight: FontWeight.w600)),
+              child: Text(
+                widget.imageName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             const SizedBox(width: 8),
-            Container(width: 1, height: 14, color: color.withOpacity(0.3)),
+            Container(
+              width: 1,
+              height: 14,
+              color: color.withValues(alpha: 0.3),
+            ),
             const SizedBox(width: 8),
             Text(
               widget.mode == 'versus' ? 'Modo 1 vs 1' : 'Modo Solitario',
               style: TextStyle(
-                  color: color.withOpacity(0.7),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400),
+                color: color.withValues(alpha: 0.7),
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ],
         ),
@@ -174,14 +192,18 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
   Widget _buildStartButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: _startGame,
-          icon: const Icon(Icons.play_arrow_rounded, size: 22),
-          label: const Text('¡A jugar!'),
-        ),
-      ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.3, end: 0, delay: 500.ms),
+      child:
+          SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _startGame,
+                  icon: const Icon(Icons.play_arrow_rounded, size: 22),
+                  label: const Text('¡A jugar!'),
+                ),
+              )
+              .animate()
+              .fadeIn(delay: 500.ms)
+              .slideY(begin: 0.3, end: 0, delay: 500.ms),
     );
   }
 }
@@ -207,7 +229,7 @@ class _DifficultyCard extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : AppTheme.surface,
+          color: isSelected ? color.withValues(alpha: 0.1) : AppTheme.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isSelected ? color : AppTheme.border,
@@ -222,16 +244,23 @@ class _DifficultyCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(difficulty.label,
-                      style: const TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                          letterSpacing: -0.3)),
+                  Text(
+                    difficulty.label,
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
                   const SizedBox(height: 3),
-                  Text(difficulty.description,
-                      style: const TextStyle(
-                          color: AppTheme.textMuted, fontSize: 12)),
+                  Text(
+                    difficulty.description,
+                    style: const TextStyle(
+                      color: AppTheme.textMuted,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -243,11 +272,16 @@ class _DifficultyCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isSelected ? color : Colors.transparent,
                 border: Border.all(
-                    color: isSelected ? color : AppTheme.border, width: 2),
+                  color: isSelected ? color : AppTheme.border,
+                  width: 2,
+                ),
               ),
               child: isSelected
-                  ? const Icon(Icons.check_rounded,
-                      size: 15, color: AppTheme.background)
+                  ? const Icon(
+                      Icons.check_rounded,
+                      size: 15,
+                      color: AppTheme.background,
+                    )
                   : null,
             ),
           ],
@@ -276,9 +310,12 @@ class _MiniGridPreview extends StatelessWidget {
         children: List.generate(gridSize * gridSize, (i) {
           return Container(
             decoration: BoxDecoration(
-              color: color.withOpacity(0.10 + (i % 3) * 0.08),
+              color: color.withValues(alpha: 0.10 + (i % 3) * 0.08),
               borderRadius: BorderRadius.circular(2.5),
-              border: Border.all(color: color.withOpacity(0.25), width: 0.5),
+              border: Border.all(
+                color: color.withValues(alpha: 0.25),
+                width: 0.5,
+              ),
             ),
           );
         }),

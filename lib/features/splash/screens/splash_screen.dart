@@ -34,9 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
         children: [
           // Fondo con gradiente radial
           Positioned.fill(
-            child: CustomPaint(
-              painter: _SplashBackgroundPainter(),
-            ),
+            child: CustomPaint(painter: _SplashBackgroundPainter()),
           ),
 
           // Contenido central
@@ -59,34 +57,40 @@ class _SplashScreenState extends State<SplashScreen> {
 
                 // Título "PuzzleRace"
                 RichText(
-                  text: const TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Puzzle',
-                        style: TextStyle(
-                          fontFamily: 'DMSans',
-                          fontSize: 40,
-                          fontWeight: FontWeight.w800,
-                          color: AppTheme.textPrimary,
-                          letterSpacing: -1.5,
-                        ),
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Puzzle',
+                            style: TextStyle(
+                              fontFamily: 'DMSans',
+                              fontSize: 40,
+                              fontWeight: FontWeight.w800,
+                              color: AppTheme.textPrimary,
+                              letterSpacing: -1.5,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Race',
+                            style: TextStyle(
+                              fontFamily: 'DMSans',
+                              fontSize: 40,
+                              fontWeight: FontWeight.w800,
+                              color: AppTheme.accent,
+                              letterSpacing: -1.5,
+                            ),
+                          ),
+                        ],
                       ),
-                      TextSpan(
-                        text: 'Race',
-                        style: TextStyle(
-                          fontFamily: 'DMSans',
-                          fontSize: 40,
-                          fontWeight: FontWeight.w800,
-                          color: AppTheme.accent,
-                          letterSpacing: -1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+                    )
                     .animate()
                     .fadeIn(delay: 500.ms, duration: 500.ms)
-                    .slideY(begin: 0.3, end: 0, delay: 500.ms, duration: 500.ms, curve: Curves.easeOut),
+                    .slideY(
+                      begin: 0.3,
+                      end: 0,
+                      delay: 500.ms,
+                      duration: 500.ms,
+                      curve: Curves.easeOut,
+                    ),
 
                 const SizedBox(height: 8),
 
@@ -99,16 +103,15 @@ class _SplashScreenState extends State<SplashScreen> {
                     color: AppTheme.textMuted,
                     letterSpacing: 0.5,
                   ),
-                )
-                    .animate()
-                    .fadeIn(delay: 800.ms, duration: 500.ms),
+                ).animate().fadeIn(delay: 800.ms, duration: 500.ms),
 
                 const SizedBox(height: 64),
 
                 // Indicador de carga
-                _LoadingDots()
-                    .animate()
-                    .fadeIn(delay: 1200.ms, duration: 400.ms),
+                _LoadingDots().animate().fadeIn(
+                  delay: 1200.ms,
+                  duration: 400.ms,
+                ),
               ],
             ),
           ),
@@ -123,12 +126,10 @@ class _SplashScreenState extends State<SplashScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
-                color: AppTheme.textMuted.withOpacity(0.4),
+                color: AppTheme.textMuted.withValues(alpha: 0.4),
                 letterSpacing: 1.0,
               ),
-            )
-                .animate()
-                .fadeIn(delay: 1500.ms, duration: 500.ms),
+            ).animate().fadeIn(delay: 1500.ms, duration: 500.ms),
           ),
         ],
       ),
@@ -150,18 +151,14 @@ class _PuzzleIcon extends StatelessWidget {
         border: Border.all(color: AppTheme.border, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.accent.withOpacity(0.25),
+            color: AppTheme.accent.withValues(alpha: 0.25),
             blurRadius: 40,
             spreadRadius: 4,
           ),
         ],
       ),
       child: const Center(
-        child: Icon(
-          Icons.extension_rounded,
-          size: 54,
-          color: AppTheme.accent,
-        ),
+        child: Icon(Icons.extension_rounded, size: 54, color: AppTheme.accent),
       ),
     );
   }
@@ -203,7 +200,8 @@ class _LoadingDotsState extends State<_LoadingDots>
           builder: (_, __) {
             // Cada dot tiene un desfase en la animación
             final offset = ((_ctrl.value * 3) - i).clamp(0.0, 1.0);
-            final scale  = 0.6 + 0.4 * (1 - (offset - 0.5).abs() * 2).clamp(0.0, 1.0);
+            final scale =
+                0.6 + 0.4 * (1 - (offset - 0.5).abs() * 2).clamp(0.0, 1.0);
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               child: Transform.scale(
@@ -212,7 +210,7 @@ class _LoadingDotsState extends State<_LoadingDots>
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: AppTheme.accent.withOpacity(0.3 + 0.7 * scale),
+                    color: AppTheme.accent.withValues(alpha: 0.3 + 0.7 * scale),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -235,10 +233,7 @@ class _SplashBackgroundPainter extends CustomPainter {
       ..shader = RadialGradient(
         center: Alignment.center,
         radius: 0.7,
-        colors: [
-          AppTheme.accent.withOpacity(0.07),
-          Colors.transparent,
-        ],
+        colors: [AppTheme.accent.withValues(alpha: 0.07), Colors.transparent],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paintGold);
@@ -249,7 +244,7 @@ class _SplashBackgroundPainter extends CustomPainter {
         center: const Alignment(0.8, 1.2),
         radius: 0.6,
         colors: [
-          AppTheme.accentBlue.withOpacity(0.05),
+          AppTheme.accentBlue.withValues(alpha: 0.05),
           Colors.transparent,
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));

@@ -29,7 +29,7 @@ class ResultsScreen extends StatelessWidget {
               height: 260,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.accent.withOpacity(0.05),
+                color: AppTheme.accent.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -39,24 +39,24 @@ class ResultsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Spacer(),
-                  const Text('🏆', style: TextStyle(fontSize: 64))
-                      .animate()
-                      .scale(
-                          begin: const Offset(0.3, 0.3),
-                          end: const Offset(1, 1),
-                          curve: Curves.elasticOut,
-                          duration: 800.ms),
+                  const Text(
+                    '🏆',
+                    style: TextStyle(fontSize: 64),
+                  ).animate().scale(
+                    begin: const Offset(0.3, 0.3),
+                    end: const Offset(1, 1),
+                    curve: Curves.elasticOut,
+                    duration: 800.ms,
+                  ),
                   const SizedBox(height: 16),
-                  Text('¡Puzzle completado!',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineLarge
-                              ?.copyWith(
-                                  color: AppTheme.accent,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: -0.5))
-                      .animate()
-                      .fadeIn(delay: 150.ms),
+                  Text(
+                    '¡Puzzle completado!',
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      color: AppTheme.accent,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.5,
+                    ),
+                  ).animate().fadeIn(delay: 150.ms),
                   const SizedBox(height: 6),
                   Text(
                     '${config.categoryEmoji} ${config.imageName} · '
@@ -112,7 +112,7 @@ class ResultsScreen extends StatelessWidget {
       height: 140,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: config.categoryColor.withOpacity(0.4)),
+        border: Border.all(color: config.categoryColor.withValues(alpha: 0.4)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(19),
@@ -132,13 +132,16 @@ class ResultsScreen extends StatelessWidget {
     final color = isRecord ? AppTheme.accent : AppTheme.textMuted;
     final String text;
     if (isRecord && result.previousBestSeconds == null) {
-      text = '🎉 ¡Nuevo récord! Tu primer tiempo en '
+      text =
+          '🎉 ¡Nuevo récord! Tu primer tiempo en '
           '${result.config.difficulty.label}';
     } else if (isRecord) {
-      text = '🎉 ¡Nuevo récord! Antes: '
+      text =
+          '🎉 ¡Nuevo récord! Antes: '
           '${PlayerStats.formatSeconds(result.previousBestSeconds)}';
     } else {
-      text = 'Tu mejor tiempo en ${result.config.difficulty.label}: '
+      text =
+          'Tu mejor tiempo en ${result.config.difficulty.label}: '
           '${PlayerStats.formatSeconds(result.previousBestSeconds)}';
     }
 
@@ -146,17 +149,18 @@ class ResultsScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Text(
         text,
         textAlign: TextAlign.center,
         style: TextStyle(
-            color: isRecord ? AppTheme.accent : AppTheme.textMuted,
-            fontSize: 13,
-            fontWeight: isRecord ? FontWeight.w600 : FontWeight.w400),
+          color: isRecord ? AppTheme.accent : AppTheme.textMuted,
+          fontSize: 13,
+          fontWeight: isRecord ? FontWeight.w600 : FontWeight.w400,
+        ),
       ),
     );
   }
@@ -221,15 +225,20 @@ class _ResultStat extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 6),
-          Text(value,
-              style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                  letterSpacing: -0.5)),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 20,
+              letterSpacing: -0.5,
+            ),
+          ),
           const SizedBox(height: 2),
-          Text(label,
-              style: const TextStyle(color: AppTheme.textMuted, fontSize: 11)),
+          Text(
+            label,
+            style: const TextStyle(color: AppTheme.textMuted, fontSize: 11),
+          ),
         ],
       ),
     );

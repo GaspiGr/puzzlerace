@@ -17,10 +17,18 @@ class CategoryScreen extends StatelessWidget {
       backgroundColor: AppTheme.background,
       body: Stack(
         children: [
-          Positioned(top: -80, right: -80,
-            child: Container(width: 260, height: 260,
-              decoration: BoxDecoration(shape: BoxShape.circle,
-                color: AppTheme.accent.withOpacity(0.04)))),
+          Positioned(
+            top: -80,
+            right: -80,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.accent.withValues(alpha: 0.04),
+              ),
+            ),
+          ),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,14 +52,18 @@ class CategoryScreen extends StatelessWidget {
           GestureDetector(
             onTap: () => context.pop(),
             child: Container(
-              width: 42, height: 42,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
                 color: AppTheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppTheme.border),
               ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: AppTheme.textPrimary, size: 18),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppTheme.textPrimary,
+                size: 18,
+              ),
             ),
           ).animate().fadeIn(duration: 300.ms),
           const SizedBox(width: 14),
@@ -59,11 +71,20 @@ class CategoryScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Elige una categoría',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700, fontSize: 22, letterSpacing: -0.5),
-                ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.15, end: 0, delay: 100.ms),
-                Text('¿Qué tipo de imagen quieres armar?',
+                Text(
+                      'Elige una categoría',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 22,
+                            letterSpacing: -0.5,
+                          ),
+                    )
+                    .animate()
+                    .fadeIn(delay: 100.ms)
+                    .slideX(begin: -0.15, end: 0, delay: 100.ms),
+                Text(
+                  '¿Qué tipo de imagen quieres armar?',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ).animate().fadeIn(delay: 180.ms),
               ],
@@ -76,30 +97,47 @@ class CategoryScreen extends StatelessWidget {
 
   Widget _buildModeBadge(BuildContext context) {
     final isVersus = mode == 'versus';
-    final color    = isVersus ? AppTheme.accentBlue : AppTheme.accent;
-    final icon     = isVersus ? Icons.sports_esports_rounded : Icons.timer_rounded;
-    final label    = isVersus ? 'Modo 1 vs 1' : 'Modo Solitario';
+    final color = isVersus ? AppTheme.accentBlue : AppTheme.accent;
+    final icon = isVersus ? Icons.sports_esports_rounded : Icons.timer_rounded;
+    final label = isVersus ? 'Modo 1 vs 1' : 'Modo Solitario';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.25)),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: color, size: 16),
             const SizedBox(width: 8),
-            Text(label, style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w600)),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(width: 8),
-            Container(width: 1, height: 14, color: color.withOpacity(0.3)),
+            Container(
+              width: 1,
+              height: 14,
+              color: color.withValues(alpha: 0.3),
+            ),
             const SizedBox(width: 8),
-            Text('Selecciona la imagen',
-              style: TextStyle(color: color.withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.w400)),
+            Text(
+              'Selecciona la imagen',
+              style: TextStyle(
+                color: color.withValues(alpha: 0.7),
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
           ],
         ),
       ),
@@ -112,29 +150,34 @@ class CategoryScreen extends StatelessWidget {
       child: GridView.builder(
         physics: const BouncingScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, mainAxisSpacing: 14,
-          crossAxisSpacing: 14, childAspectRatio: 0.88,
+          crossAxisCount: 2,
+          mainAxisSpacing: 14,
+          crossAxisSpacing: 14,
+          childAspectRatio: 0.88,
         ),
         itemCount: AppCategories.all.length,
         itemBuilder: (context, i) {
           final cat = AppCategories.all[i];
           return _CategoryCard(
-            category: cat,
-            onTap: () => context.push(AppRoutes.images, extra: {
-              'mode': mode,
-              'categoryId': cat.id,
-              'categoryLabel': cat.label,
-              'categoryEmoji': cat.emoji,
-              'categoryColor': cat.color,
-            }),
-          ).animate()
-            .fadeIn(delay: (300 + i * 70).ms)
-            .slideY(begin: 0.15, end: 0, delay: (300 + i * 70).ms);
+                category: cat,
+                onTap: () => context.push(
+                  AppRoutes.images,
+                  extra: {
+                    'mode': mode,
+                    'categoryId': cat.id,
+                    'categoryLabel': cat.label,
+                    'categoryEmoji': cat.emoji,
+                    'categoryColor': cat.color,
+                  },
+                ),
+              )
+              .animate()
+              .fadeIn(delay: (300 + i * 70).ms)
+              .slideY(begin: 0.15, end: 0, delay: (300 + i * 70).ms);
         },
       ),
     );
   }
-
 }
 
 class _CategoryCard extends StatefulWidget {
@@ -154,7 +197,10 @@ class _CategoryCardState extends State<_CategoryCard> {
     final cat = widget.category;
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) { setState(() => _pressed = false); widget.onTap(); },
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap();
+      },
       onTapCancel: () => setState(() => _pressed = false),
       child: AnimatedScale(
         scale: _pressed ? 0.95 : 1.0,
@@ -163,8 +209,10 @@ class _CategoryCardState extends State<_CategoryCard> {
           decoration: BoxDecoration(
             color: cat.bgColor,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: cat.color.withOpacity(_pressed ? 0.6 : 0.2),
-              width: _pressed ? 1.5 : 1),
+            border: Border.all(
+              color: cat.color.withValues(alpha: _pressed ? 0.6 : 0.2),
+              width: _pressed ? 1.5 : 1,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,22 +223,34 @@ class _CategoryCardState extends State<_CategoryCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      width: 52, height: 52,
+                      width: 52,
+                      height: 52,
                       decoration: BoxDecoration(
-                        color: cat.color.withOpacity(0.12),
+                        color: cat.color.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: cat.color.withOpacity(0.2)),
+                        border: Border.all(
+                          color: cat.color.withValues(alpha: 0.2),
+                        ),
                       ),
-                      child: Center(child: Text(cat.emoji,
-                        style: const TextStyle(fontSize: 26))),
+                      child: Center(
+                        child: Text(
+                          cat.emoji,
+                          style: const TextStyle(fontSize: 26),
+                        ),
+                      ),
                     ),
                     Container(
-                      width: 28, height: 28,
+                      width: 28,
+                      height: 28,
                       decoration: BoxDecoration(
-                        color: cat.color.withOpacity(0.1),
+                        color: cat.color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(Icons.arrow_forward_rounded, color: cat.color, size: 15),
+                      child: Icon(
+                        Icons.arrow_forward_rounded,
+                        color: cat.color,
+                        size: 15,
+                      ),
                     ),
                   ],
                 ),
@@ -201,26 +261,48 @@ class _CategoryCardState extends State<_CategoryCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(cat.label,
-                      style: const TextStyle(color: AppTheme.textPrimary,
-                        fontWeight: FontWeight.w700, fontSize: 16, letterSpacing: -0.3)),
+                    Text(
+                      cat.label,
+                      style: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
                     const SizedBox(height: 3),
-                    Text(cat.description,
-                      style: const TextStyle(color: AppTheme.textMuted, fontSize: 11,
-                        fontWeight: FontWeight.w400, height: 1.4),
-                      maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(
+                      cat.description,
+                      style: const TextStyle(
+                        color: AppTheme.textMuted,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                        height: 1.4,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     const SizedBox(height: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
-                        color: cat.color.withOpacity(0.1),
+                        color: cat.color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(999),
-                        border: Border.all(color: cat.color.withOpacity(0.25)),
+                        border: Border.all(
+                          color: cat.color.withValues(alpha: 0.25),
+                        ),
                       ),
                       child: Text(
                         '${PuzzleCatalog.forCategory(cat.id).length} puzzles',
-                        style: TextStyle(color: cat.color, fontSize: 10,
-                          fontWeight: FontWeight.w600)),
+                        style: TextStyle(
+                          color: cat.color,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -232,4 +314,3 @@ class _CategoryCardState extends State<_CategoryCard> {
     );
   }
 }
-

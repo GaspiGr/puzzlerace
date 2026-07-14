@@ -35,27 +35,36 @@ class ProfileView extends ConsumerWidget {
       child: Column(
         children: [
           Container(
-            width: 88,
-            height: 88,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppTheme.accent.withOpacity(0.12),
-              border: Border.all(color: AppTheme.accent.withOpacity(0.4)),
-            ),
-            child: const Center(
-                child: Text('🧩', style: TextStyle(fontSize: 40))),
-          ).animate().fadeIn(duration: 300.ms).scale(
-              begin: const Offset(0.8, 0.8), end: const Offset(1, 1)),
+                width: 88,
+                height: 88,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.accent.withValues(alpha: 0.12),
+                  border: Border.all(
+                    color: AppTheme.accent.withValues(alpha: 0.4),
+                  ),
+                ),
+                child: const Center(
+                  child: Text('🧩', style: TextStyle(fontSize: 40)),
+                ),
+              )
+              .animate()
+              .fadeIn(duration: 300.ms)
+              .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1)),
           const SizedBox(height: 14),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
-                child: Text(name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w700, letterSpacing: -0.5)),
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
               ),
               const SizedBox(width: 8),
               GestureDetector(
@@ -68,24 +77,30 @@ class ProfileView extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: AppTheme.border),
                   ),
-                  child: const Icon(Icons.edit_rounded,
-                      color: AppTheme.textMuted, size: 14),
+                  child: const Icon(
+                    Icons.edit_rounded,
+                    color: AppTheme.textMuted,
+                    size: 14,
+                  ),
                 ),
               ),
             ],
           ).animate().fadeIn(delay: 100.ms),
           const SizedBox(height: 4),
-          Text('Jugador local',
-                  style: Theme.of(context).textTheme.bodySmall)
-              .animate()
-              .fadeIn(delay: 150.ms),
+          Text(
+            'Jugador local',
+            style: Theme.of(context).textTheme.bodySmall,
+          ).animate().fadeIn(delay: 150.ms),
         ],
       ),
     );
   }
 
   Future<void> _showEditNameDialog(
-      BuildContext context, WidgetRef ref, String current) async {
+    BuildContext context,
+    WidgetRef ref,
+    String current,
+  ) async {
     final controller = TextEditingController(text: current);
     final newName = await showDialog<String>(
       context: context,
@@ -95,8 +110,10 @@ class ProfileView extends ConsumerWidget {
           borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: AppTheme.border),
         ),
-        title: const Text('Tu nombre',
-            style: TextStyle(color: AppTheme.textPrimary, fontSize: 18)),
+        title: const Text(
+          'Tu nombre',
+          style: TextStyle(color: AppTheme.textPrimary, fontSize: 18),
+        ),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -120,8 +137,10 @@ class ProfileView extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancelar',
-                style: TextStyle(color: AppTheme.textMuted)),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: AppTheme.textMuted),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(controller.text),
@@ -184,9 +203,9 @@ class ProfileView extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionTitle('Mejores tiempos')
-              .animate()
-              .fadeIn(delay: 300.ms),
+          const _SectionTitle(
+            'Mejores tiempos',
+          ).animate().fadeIn(delay: 300.ms),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
@@ -197,8 +216,7 @@ class ProfileView extends ConsumerWidget {
             child: Column(
               children: [
                 for (var i = 0; i < Difficulty.values.length; i++) ...[
-                  if (i > 0)
-                    const Divider(height: 1, color: AppTheme.border),
+                  if (i > 0) const Divider(height: 1, color: AppTheme.border),
                   _BestTimeRow(
                     difficulty: Difficulty.values[i],
                     seconds: stats.bestTimes[Difficulty.values[i]],
@@ -231,14 +249,21 @@ class ProfileView extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.extension_off_rounded,
-                      color: AppTheme.textMuted, size: 30),
+                  const Icon(
+                    Icons.extension_off_rounded,
+                    color: AppTheme.textMuted,
+                    size: 30,
+                  ),
                   const SizedBox(height: 10),
-                  Text('Aún no completas ningún puzzle',
-                      style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    'Aún no completas ningún puzzle',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   const SizedBox(height: 2),
-                  Text('¡Juega tu primera partida!',
-                      style: Theme.of(context).textTheme.bodySmall),
+                  Text(
+                    '¡Juega tu primera partida!',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ],
               ),
             ).animate().fadeIn(delay: 450.ms)
@@ -247,9 +272,9 @@ class ProfileView extends ConsumerWidget {
               final entry = stats.history[i];
               return Padding(
                 padding: EdgeInsets.only(top: i == 0 ? 0 : 10),
-                child: _HistoryTile(entry: entry)
-                    .animate()
-                    .fadeIn(delay: (450 + i * 60).ms),
+                child: _HistoryTile(
+                  entry: entry,
+                ).animate().fadeIn(delay: (450 + i * 60).ms),
               );
             }),
         ],
@@ -264,9 +289,13 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title,
-        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w700, fontSize: 18));
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+        fontSize: 18,
+      ),
+    );
   }
 }
 
@@ -296,15 +325,20 @@ class _ProfileStat extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 18),
           const SizedBox(height: 6),
-          Text(value,
-              style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 17,
-                  letterSpacing: -0.5)),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.w700,
+              fontSize: 17,
+              letterSpacing: -0.5,
+            ),
+          ),
           const SizedBox(height: 1),
-          Text(label,
-              style: const TextStyle(color: AppTheme.textMuted, fontSize: 10)),
+          Text(
+            label,
+            style: const TextStyle(color: AppTheme.textMuted, fontSize: 10),
+          ),
         ],
       ),
     );
@@ -323,26 +357,30 @@ class _BestTimeRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
       child: Row(
         children: [
-          Icon(Icons.speed_rounded,
-              color: seconds != null ? AppTheme.accent : AppTheme.textMuted,
-              size: 17),
+          Icon(
+            Icons.speed_rounded,
+            color: seconds != null ? AppTheme.accent : AppTheme.textMuted,
+            size: 17,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               '${difficulty.label} · '
               '${difficulty.gridSize}×${difficulty.gridSize}',
               style: const TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
+                color: AppTheme.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           Text(
             PlayerStats.formatSeconds(seconds),
             style: TextStyle(
-                color: seconds != null ? AppTheme.accent : AppTheme.textMuted,
-                fontSize: 14,
-                fontWeight: FontWeight.w700),
+              color: seconds != null ? AppTheme.accent : AppTheme.textMuted,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -380,34 +418,45 @@ class _HistoryTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(11),
             ),
             child: Center(
-                child: Text(entry.categoryEmoji,
-                    style: const TextStyle(fontSize: 20))),
+              child: Text(
+                entry.categoryEmoji,
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(entry.categoryLabel,
-                    style: const TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14)),
+                Text(
+                  entry.categoryLabel,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
                   '${entry.difficulty.label} · ${entry.moves} movs · '
                   '$_formattedDate',
-                  style:
-                      const TextStyle(color: AppTheme.textMuted, fontSize: 11),
+                  style: const TextStyle(
+                    color: AppTheme.textMuted,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
           ),
-          Text(entry.formattedTime,
-              style: const TextStyle(
-                  color: AppTheme.accent,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15)),
+          Text(
+            entry.formattedTime,
+            style: const TextStyle(
+              color: AppTheme.accent,
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+            ),
+          ),
         ],
       ),
     );
