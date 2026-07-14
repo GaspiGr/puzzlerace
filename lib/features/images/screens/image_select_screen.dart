@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../app/theme.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/data/puzzle_catalog.dart';
@@ -39,6 +40,37 @@ class ImageSelectScreen extends StatelessWidget {
     );
   }
 
+  /// Abre la galería del dispositivo; con la foto elegida se sigue el mismo
+  /// flujo de dificultad, recortándola al cuadrado central del tablero.
+  Future<void> _pickFromDevice(BuildContext context) async {
+    final XFile? picked;
+    try {
+      picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo abrir la galería')),
+      );
+      return;
+    }
+    if (picked == null || !context.mounted) return;
+
+    context.push(
+      AppRoutes.difficulty,
+      extra: {
+        'mode': mode,
+        'categoryId': categoryId,
+        'categoryLabel': categoryLabel,
+        'categoryEmoji': '📷',
+        'categoryColor': categoryColor,
+        'imageId': 'device_${DateTime.now().millisecondsSinceEpoch}',
+        'imageName': 'Tu foto',
+        'imageSeed': 0,
+        'imageFilePath': picked.path,
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final images = PuzzleCatalog.forCategory(categoryId);
@@ -61,9 +93,19 @@ class ImageSelectScreen extends StatelessWidget {
                   crossAxisSpacing: 14,
                   childAspectRatio: 0.82,
                 ),
-                itemCount: images.length,
+                // La primera celda abre la galería del dispositivo.
+                itemCount: images.length + 1,
                 itemBuilder: (context, i) {
-                  final image = images[i];
+                  if (i == 0) {
+                    return _DeviceImageCard(
+                          color: categoryColor,
+                          onTap: () => _pickFromDevice(context),
+                        )
+                        .animate()
+                        .fadeIn(delay: 300.ms)
+                        .slideY(begin: 0.15, end: 0, delay: 300.ms);
+                  }
+                  final image = images[i - 1];
                   return _ImageCard(
                         image: image,
                         color: categoryColor,
@@ -258,6 +300,86 @@ class _ImageCardState extends State<_ImageCard> {
                       size: 15,
                     ),
                   ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tarjeta "Tu galería": elegir una foto propia del dispositivo.
+class _DeviceImageCard extends StatefulWidget {
+  final Color color;
+  final VoidCallback onTap;
+
+  const _DeviceImageCard({required this.color, required this.onTap});
+
+  @override
+  State<_DeviceImageCard> createState() => _DeviceImageCardState();
+}
+
+class _DeviceImageCardState extends State<_DeviceImageCard> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.95 : 1.0,
+        duration: const Duration(milliseconds: 130),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: widget.color.withValues(alpha: _pressed ? 0.6 : 0.35),
+              width: _pressed ? 1.5 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: widget.color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: widget.color.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Icon(
+                  Icons.add_photo_alternate_rounded,
+                  color: widget.color,
+                  size: 26,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Tu galería',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                'Elige una foto propia',
+                style: TextStyle(
+                  color: AppTheme.textMuted.withValues(alpha: 0.9),
+                  fontSize: 11,
                 ),
               ),
             ],

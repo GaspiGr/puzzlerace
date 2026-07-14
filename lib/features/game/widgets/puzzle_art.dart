@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../../../app/theme.dart';
+import '../logic/image_crop.dart';
 
 /// Arte procedural determinístico del puzzle.
 ///
@@ -115,12 +117,14 @@ class PuzzleArtPainter extends CustomPainter {
       oldDelegate.baseColor != baseColor || oldDelegate.seed != seed;
 }
 
-/// Pinta una sola pieza: recorta la región `tileId` de la obra completa.
+/// Pinta una sola pieza: recorta la región `tileId` de la foto elegida
+/// (si `image` no es nula) o de la obra procedural completa.
 class PuzzleTilePainter extends CustomPainter {
   final int tileId;
   final int gridSize;
   final Color baseColor;
   final int seed;
+  final ui.Image? image;
   final bool showHint;
 
   const PuzzleTilePainter({
@@ -128,24 +132,40 @@ class PuzzleTilePainter extends CustomPainter {
     required this.gridSize,
     required this.baseColor,
     required this.seed,
+    this.image,
     this.showHint = true,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final row = tileId ~/ gridSize;
-    final col = tileId % gridSize;
+    final img = image;
+    if (img != null) {
+      canvas.drawImageRect(
+        img,
+        ImageCrop.tileSource(
+          img.width.toDouble(),
+          img.height.toDouble(),
+          gridSize,
+          tileId,
+        ),
+        Offset.zero & size,
+        Paint()..filterQuality = FilterQuality.medium,
+      );
+    } else {
+      final row = tileId ~/ gridSize;
+      final col = tileId % gridSize;
 
-    canvas.save();
-    canvas.clipRect(Offset.zero & size);
-    canvas.translate(-col * size.width, -row * size.height);
-    PuzzleArt.paintFull(
-      canvas,
-      Size(size.width * gridSize, size.height * gridSize),
-      baseColor,
-      seed,
-    );
-    canvas.restore();
+      canvas.save();
+      canvas.clipRect(Offset.zero & size);
+      canvas.translate(-col * size.width, -row * size.height);
+      PuzzleArt.paintFull(
+        canvas,
+        Size(size.width * gridSize, size.height * gridSize),
+        baseColor,
+        seed,
+      );
+      canvas.restore();
+    }
 
     if (showHint) {
       final painter = TextPainter(
@@ -170,5 +190,6 @@ class PuzzleTilePainter extends CustomPainter {
       oldDelegate.gridSize != gridSize ||
       oldDelegate.baseColor != baseColor ||
       oldDelegate.seed != seed ||
+      oldDelegate.image != image ||
       oldDelegate.showHint != showHint;
 }

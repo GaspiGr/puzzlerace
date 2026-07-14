@@ -14,6 +14,7 @@ class DifficultyScreen extends StatefulWidget {
   final String imageId;
   final String imageName;
   final int imageSeed;
+  final String? imageFilePath;
 
   const DifficultyScreen({
     super.key,
@@ -25,6 +26,7 @@ class DifficultyScreen extends StatefulWidget {
     required this.imageId,
     required this.imageName,
     required this.imageSeed,
+    this.imageFilePath,
   });
 
   @override
@@ -46,6 +48,7 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
         imageId: widget.imageId,
         imageName: widget.imageName,
         imageSeed: widget.imageSeed,
+        imageFilePath: widget.imageFilePath,
         difficulty: _selected,
       ),
     );

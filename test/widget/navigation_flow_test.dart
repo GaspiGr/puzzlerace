@@ -107,6 +107,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Elige una imagen'), findsOneWidget);
     expect(find.text('Bosque nublado'), findsOneWidget);
+    // La galería ofrece elegir una foto del dispositivo.
+    expect(find.text('Tu galería'), findsOneWidget);
 
     // Imagen → Dificultad
     await tester.tap(find.text('Bosque nublado'));

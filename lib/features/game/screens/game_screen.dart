@@ -7,6 +7,7 @@ import '../../../core/constants/app_routes.dart';
 import '../logic/puzzle_engine.dart';
 import '../models/puzzle_models.dart';
 import '../providers/game_provider.dart';
+import '../providers/puzzle_image_provider.dart';
 import '../widgets/puzzle_board.dart';
 
 class GameScreen extends ConsumerWidget {
@@ -46,18 +47,7 @@ class GameScreen extends ConsumerWidget {
                 const Spacer(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child:
-                      PuzzleBoard(
-                            config: config,
-                            state: state,
-                            onTileTap: notifier.tapTile,
-                          )
-                          .animate()
-                          .fadeIn(duration: 400.ms)
-                          .scale(
-                            begin: const Offset(0.95, 0.95),
-                            end: const Offset(1, 1),
-                          ),
+                  child: _buildBoard(context, ref, state, notifier),
                 ),
                 const Spacer(),
                 _buildFooterHint(context, state),
@@ -69,6 +59,48 @@ class GameScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// El tablero espera a que la foto del dispositivo (si hay) esté
+  /// decodificada; con arte procedural resuelve de inmediato.
+  Widget _buildBoard(
+    BuildContext context,
+    WidgetRef ref,
+    GameState state,
+    GameNotifier notifier,
+  ) {
+    final imageAsync = ref.watch(puzzleImageProvider(config.imageFilePath));
+    return imageAsync
+        .when(
+          data: (image) => PuzzleBoard(
+            config: config,
+            state: state,
+            onTileTap: notifier.tapTile,
+            image: image,
+          ),
+          loading: () => AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppTheme.border),
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(color: AppTheme.accent),
+              ),
+            ),
+          ),
+          // Foto ilegible o borrada: se juega con el arte procedural.
+          error: (_, __) => PuzzleBoard(
+            config: config,
+            state: state,
+            onTileTap: notifier.tapTile,
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 400.ms)
+        .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1));
   }
 
   Widget _buildHeader(BuildContext context, GameNotifier notifier) {

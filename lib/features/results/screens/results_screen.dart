@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
@@ -118,6 +119,7 @@ class ResultsScreen extends StatelessWidget {
   }
 
   Widget _buildArtPreview(PuzzleConfig config) {
+    final filePath = config.imageFilePath;
     return Container(
       width: 140,
       height: 140,
@@ -127,13 +129,26 @@ class ResultsScreen extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(19),
-        child: CustomPaint(
-          painter: PuzzleArtPainter(
-            baseColor: config.categoryColor,
-            seed: config.artSeed,
-          ),
-          child: const SizedBox.expand(),
-        ),
+        child: filePath != null
+            ? Image.file(
+                File(filePath),
+                fit: BoxFit.cover,
+                // Si la foto ya no existe, se cae al arte procedural.
+                errorBuilder: (_, __, ___) => CustomPaint(
+                  painter: PuzzleArtPainter(
+                    baseColor: config.categoryColor,
+                    seed: config.artSeed,
+                  ),
+                  child: const SizedBox.expand(),
+                ),
+              )
+            : CustomPaint(
+                painter: PuzzleArtPainter(
+                  baseColor: config.categoryColor,
+                  seed: config.artSeed,
+                ),
+                child: const SizedBox.expand(),
+              ),
       ),
     );
   }

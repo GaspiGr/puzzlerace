@@ -29,6 +29,10 @@ class PuzzleConfig {
   final String imageId;
   final String imageName;
   final int imageSeed;
+
+  /// Ruta de una foto elegida del dispositivo. Si no es nula, las piezas se
+  /// recortan de esa imagen; si es nula, se usa el arte procedural del seed.
+  final String? imageFilePath;
   final Difficulty difficulty;
 
   const PuzzleConfig({
@@ -40,6 +44,7 @@ class PuzzleConfig {
     required this.imageId,
     required this.imageName,
     required this.imageSeed,
+    this.imageFilePath,
     required this.difficulty,
   });
 
@@ -52,10 +57,12 @@ class PuzzleConfig {
       other.mode == mode &&
       other.categoryId == categoryId &&
       other.imageId == imageId &&
+      other.imageFilePath == imageFilePath &&
       other.difficulty == difficulty;
 
   @override
-  int get hashCode => Object.hash(mode, categoryId, imageId, difficulty);
+  int get hashCode =>
+      Object.hash(mode, categoryId, imageId, imageFilePath, difficulty);
 }
 
 enum GameStatus { playing, paused, won }
