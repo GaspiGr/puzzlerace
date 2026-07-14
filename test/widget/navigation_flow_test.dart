@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'test_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:proyecto_puzzlerace/core/constants/app_routes.dart';
 import 'package:proyecto_puzzlerace/features/category/screens/category_screen.dart';
@@ -9,12 +10,6 @@ import 'package:proyecto_puzzlerace/features/home/screens/home_screen.dart';
 import 'package:proyecto_puzzlerace/features/images/screens/image_select_screen.dart';
 import 'package:proyecto_puzzlerace/features/stats/providers/stats_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-void usePhoneSurface(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1080, 2340);
-  tester.view.devicePixelRatio = 3.0;
-  addTearDown(tester.view.reset);
-}
 
 /// Router de prueba con el tramo del flujo previo a la partida.
 GoRouter buildTestRouter() {
@@ -82,11 +77,11 @@ void main() {
   ) async {
     usePhoneSurface(tester);
     await tester.pumpWidget(await buildApp(buildTestRouter()));
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     // Home → Categoría
     await tester.tap(find.text('Solitario'));
-    await tester.pumpAndSettle();
+    await settle(tester);
     expect(find.text('Elige una categoría'), findsOneWidget);
     expect(find.text('Modo Solitario'), findsOneWidget);
 
@@ -104,7 +99,7 @@ void main() {
 
     // Categoría → Imagen
     await tester.tap(find.text('Naturaleza'));
-    await tester.pumpAndSettle();
+    await settle(tester);
     expect(find.text('Elige una imagen'), findsOneWidget);
     expect(find.text('Bosque nublado'), findsOneWidget);
     // La galería ofrece elegir una foto del dispositivo.
@@ -112,7 +107,7 @@ void main() {
 
     // Imagen → Dificultad
     await tester.tap(find.text('Bosque nublado'));
-    await tester.pumpAndSettle();
+    await settle(tester);
     expect(find.text('Elige la dificultad'), findsOneWidget);
     expect(find.text('Fácil'), findsOneWidget);
     expect(find.text('Medio'), findsOneWidget);
@@ -123,10 +118,10 @@ void main() {
   testWidgets('el modo 1 vs 1 llega a categorías con su badge', (tester) async {
     usePhoneSurface(tester);
     await tester.pumpWidget(await buildApp(buildTestRouter()));
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     await tester.tap(find.text('1 vs 1'));
-    await tester.pumpAndSettle();
+    await settle(tester);
     expect(find.text('Modo 1 vs 1'), findsOneWidget);
   });
 }

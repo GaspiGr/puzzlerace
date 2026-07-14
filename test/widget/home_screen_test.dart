@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'test_utils.dart';
 import 'package:proyecto_puzzlerace/features/home/screens/home_screen.dart';
 import 'package:proyecto_puzzlerace/features/profile/screens/profile_view.dart';
 import 'package:proyecto_puzzlerace/features/stats/providers/stats_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-/// Simula el tamaño lógico de un teléfono para evitar overflows de layout.
-void usePhoneSurface(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1080, 2340);
-  tester.view.devicePixelRatio = 3.0;
-  addTearDown(tester.view.reset);
-}
 
 Future<Widget> buildHome({Map<String, Object> prefsValues = const {}}) async {
   SharedPreferences.setMockInitialValues(prefsValues);
@@ -36,7 +30,7 @@ void main() {
         },
       ),
     );
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     expect(find.text('¡Hola, Jugador! 👋'), findsOneWidget);
     expect(find.text('Solitario'), findsOneWidget);
@@ -52,7 +46,7 @@ void main() {
   ) async {
     usePhoneSurface(tester);
     await tester.pumpWidget(await buildHome());
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     expect(find.text('0'), findsNWidgets(2));
     expect(find.text('--'), findsOneWidget);
@@ -61,10 +55,10 @@ void main() {
   testWidgets('el tab Perfil muestra la vista de perfil', (tester) async {
     usePhoneSurface(tester);
     await tester.pumpWidget(await buildHome());
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     await tester.tap(find.text('Perfil'));
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     expect(find.byType(ProfileView), findsOneWidget);
     expect(find.text('Jugador'), findsOneWidget);
@@ -88,10 +82,10 @@ void main() {
         },
       ),
     );
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     await tester.tap(find.text('Perfil'));
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     expect(find.text('01:05'), findsOneWidget); // Fácil
     expect(find.text('05:05'), findsOneWidget); // Difícil
@@ -102,10 +96,10 @@ void main() {
   testWidgets('el tab Ranking muestra el placeholder', (tester) async {
     usePhoneSurface(tester);
     await tester.pumpWidget(await buildHome());
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     await tester.tap(find.text('Ranking'));
-    await tester.pumpAndSettle();
+    await settle(tester);
 
     expect(find.text('Ranking global'), findsOneWidget);
     expect(

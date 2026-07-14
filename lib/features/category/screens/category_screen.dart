@@ -115,12 +115,16 @@ class CategoryScreen extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 16),
             const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -130,12 +134,16 @@ class CategoryScreen extends StatelessWidget {
               color: color.withValues(alpha: 0.3),
             ),
             const SizedBox(width: 8),
-            Text(
-              'Selecciona la imagen',
-              style: TextStyle(
-                color: color.withValues(alpha: 0.7),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
+            Flexible(
+              child: Text(
+                'Selecciona la imagen',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color.withValues(alpha: 0.7),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
           ],
