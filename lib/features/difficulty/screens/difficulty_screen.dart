@@ -178,12 +178,16 @@ class _DifficultyScreenState extends State<DifficultyScreen> {
               color: color.withValues(alpha: 0.3),
             ),
             const SizedBox(width: 8),
-            Text(
-              widget.mode == 'versus' ? 'Modo 1 vs 1' : 'Modo Solitario',
-              style: TextStyle(
-                color: color.withValues(alpha: 0.7),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
+            Flexible(
+              child: Text(
+                widget.mode == 'versus' ? 'Modo 1 vs 1' : 'Modo Solitario',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color.withValues(alpha: 0.7),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
           ],

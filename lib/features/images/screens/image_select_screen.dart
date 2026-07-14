@@ -190,12 +190,16 @@ class ImageSelectScreen extends StatelessWidget {
           children: [
             Text(categoryEmoji, style: const TextStyle(fontSize: 15)),
             const SizedBox(width: 8),
-            Text(
-              categoryLabel,
-              style: TextStyle(
-                color: color,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+            Flexible(
+              child: Text(
+                categoryLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -205,12 +209,16 @@ class ImageSelectScreen extends StatelessWidget {
               color: color.withValues(alpha: 0.3),
             ),
             const SizedBox(width: 8),
-            Text(
-              mode == 'versus' ? 'Modo 1 vs 1' : 'Modo Solitario',
-              style: TextStyle(
-                color: color.withValues(alpha: 0.7),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
+            Flexible(
+              child: Text(
+                mode == 'versus' ? 'Modo 1 vs 1' : 'Modo Solitario',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color.withValues(alpha: 0.7),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'test_utils.dart';
 import 'package:proyecto_puzzlerace/features/game/models/puzzle_models.dart';
 import 'package:proyecto_puzzlerace/features/results/screens/results_screen.dart';
 
@@ -16,11 +17,9 @@ const _config = PuzzleConfig(
 );
 
 Future<void> pumpResults(WidgetTester tester, GameResult result) async {
-  tester.view.physicalSize = const Size(1080, 2340);
-  tester.view.devicePixelRatio = 3.0;
-  addTearDown(tester.view.reset);
+  usePhoneSurface(tester);
   await tester.pumpWidget(MaterialApp(home: ResultsScreen(result: result)));
-  await tester.pumpAndSettle();
+  await settle(tester);
 }
 
 void main() {
