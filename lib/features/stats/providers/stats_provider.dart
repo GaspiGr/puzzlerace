@@ -95,6 +95,17 @@ class StatsNotifier extends StateNotifier<PlayerStats> {
     );
   }
 
+  /// Borra todas las estadísticas y el historial (desde Ajustes).
+  Future<void> reset() async {
+    state = const PlayerStats();
+    await _prefs.remove(_keyGamesPlayed);
+    await _prefs.remove(_keyWins);
+    await _prefs.remove(_keyHistory);
+    for (final d in Difficulty.values) {
+      await _prefs.remove(_keyBestTime(d));
+    }
+  }
+
   void _save() {
     _prefs.setInt(_keyGamesPlayed, state.gamesPlayed);
     _prefs.setInt(_keyWins, state.wins);

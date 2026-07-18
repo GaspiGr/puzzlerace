@@ -8,6 +8,7 @@ import '../logic/puzzle_engine.dart';
 import '../models/puzzle_models.dart';
 import '../providers/game_provider.dart';
 import '../providers/puzzle_image_provider.dart';
+import '../services/game_feedback.dart';
 import '../widgets/puzzle_board.dart';
 
 class GameScreen extends ConsumerWidget {
@@ -19,6 +20,7 @@ class GameScreen extends ConsumerWidget {
     // Al completar el puzzle se navega a la pantalla de resultados.
     ref.listen(gameProvider(config), (previous, next) {
       if (previous?.status != GameStatus.won && next.status == GameStatus.won) {
+        ref.read(gameFeedbackProvider).win();
         context.pushReplacement(
           AppRoutes.results,
           extra: GameResult(
@@ -69,13 +71,16 @@ class GameScreen extends ConsumerWidget {
     GameState state,
     GameNotifier notifier,
   ) {
-    final imageAsync = ref.watch(puzzleImageProvider(config.imageFilePath));
+    final imageAsync = ref.watch(puzzleImageProvider(config.imageSource));
     return imageAsync
         .when(
           data: (image) => PuzzleBoard(
             config: config,
             state: state,
-            onTileTap: notifier.tapTile,
+            onTileTap: (slot) {
+              ref.read(gameFeedbackProvider).tileTap();
+              notifier.tapTile(slot);
+            },
             image: image,
           ),
           loading: () => AspectRatio(

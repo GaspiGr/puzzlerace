@@ -33,6 +33,10 @@ class PuzzleConfig {
   /// Ruta de una foto elegida del dispositivo. Si no es nula, las piezas se
   /// recortan de esa imagen; si es nula, se usa el arte procedural del seed.
   final String? imageFilePath;
+
+  /// URL de una foto del catálogo online (Pexels). Prioridad:
+  /// imageFilePath > imageUrl > arte procedural.
+  final String? imageUrl;
   final Difficulty difficulty;
 
   const PuzzleConfig({
@@ -45,8 +49,13 @@ class PuzzleConfig {
     required this.imageName,
     required this.imageSeed,
     this.imageFilePath,
+    this.imageUrl,
     required this.difficulty,
   });
+
+  /// Fuente de imagen real a decodificar (ruta local o URL), o nula para
+  /// usar el arte procedural.
+  String? get imageSource => imageFilePath ?? imageUrl;
 
   /// Semilla determinística para generar el arte del puzzle.
   int get artSeed => imageSeed;
@@ -58,11 +67,18 @@ class PuzzleConfig {
       other.categoryId == categoryId &&
       other.imageId == imageId &&
       other.imageFilePath == imageFilePath &&
+      other.imageUrl == imageUrl &&
       other.difficulty == difficulty;
 
   @override
-  int get hashCode =>
-      Object.hash(mode, categoryId, imageId, imageFilePath, difficulty);
+  int get hashCode => Object.hash(
+    mode,
+    categoryId,
+    imageId,
+    imageFilePath,
+    imageUrl,
+    difficulty,
+  );
 }
 
 enum GameStatus { playing, paused, won }

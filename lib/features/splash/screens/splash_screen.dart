@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../app/theme.dart';
 import '../../../../../core/constants/app_routes.dart';
+import '../../onboarding/screens/onboarding_screen.dart';
+import '../../stats/providers/stats_provider.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToHome();
+    _navigateNext();
   }
 
-  Future<void> _navigateToHome() async {
+  Future<void> _navigateNext() async {
     // Esperar a que terminen las animaciones (2.8s) + pequeño margen
     await Future.delayed(const Duration(milliseconds: 3200));
-    if (mounted) {
-      context.go(AppRoutes.home);
-    }
+    if (!mounted) return;
+    // La primera vez se muestra el tutorial (ítem 21).
+    final seen =
+        ref.read(sharedPreferencesProvider).getBool(kOnboardingSeenKey) ??
+        false;
+    context.go(seen ? AppRoutes.home : AppRoutes.onboarding);
   }
 
   @override

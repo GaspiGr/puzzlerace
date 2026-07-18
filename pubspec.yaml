@@ -31,12 +31,34 @@ dependencies:
   # Selección de imágenes del dispositivo
   image_picker: ^1.1.2
 
+  # Catálogo de fotos online (Pexels API)
+  http: ^1.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
 
+  # Generadores de ícono de launcher y splash nativo
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.1
+
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+# Ícono de launcher: ejecutar `dart run flutter_launcher_icons`
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icon/icon.png
+  adaptive_icon_background: "#0A0A0F"
+  adaptive_icon_foreground: assets/icon/icon_foreground.png
+
+# Splash nativo: ejecutar `dart run flutter_native_splash:create`
+flutter_native_splash:
+  color: "#0A0A0F"
+  image: assets/icon/splash.png
+  android_12:
+    color: "#0A0A0F"
+    image: assets/icon/splash.png

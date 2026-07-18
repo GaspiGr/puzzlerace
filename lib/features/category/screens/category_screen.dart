@@ -161,7 +161,7 @@ class CategoryScreen extends StatelessWidget {
           crossAxisCount: 2,
           mainAxisSpacing: 14,
           crossAxisSpacing: 14,
-          childAspectRatio: 0.88,
+          childAspectRatio: 0.78,
         ),
         itemCount: AppCategories.all.length,
         itemBuilder: (context, i) {
@@ -271,11 +271,14 @@ class _CategoryCardState extends State<_CategoryCard> {
                   children: [
                     Text(
                       cat.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: AppTheme.textPrimary,
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
                         letterSpacing: -0.3,
+                        height: 1.2,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -290,7 +293,7 @@ class _CategoryCardState extends State<_CategoryCard> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -309,6 +312,7 @@ class _CategoryCardState extends State<_CategoryCard> {
                           color: cat.color,
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
+                          height: 1.2,
                         ),
                       ),
                     ),

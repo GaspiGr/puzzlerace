@@ -10,7 +10,9 @@ import '../features/images/screens/image_select_screen.dart';
 import '../features/difficulty/screens/difficulty_screen.dart';
 import '../features/game/models/puzzle_models.dart';
 import '../features/game/screens/game_screen.dart';
+import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/results/screens/results_screen.dart';
+import '../features/settings/screens/settings_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -69,6 +71,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             imageName: extra['imageName'] as String? ?? fallbackImage.name,
             imageSeed: extra['imageSeed'] as int? ?? fallbackImage.seed,
             imageFilePath: extra['imageFilePath'] as String?,
+            imageUrl: extra['imageUrl'] as String?,
           );
         },
       ),
@@ -94,6 +97,21 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           );
         },
+      ),
+      GoRoute(
+        path: AppRoutes.onboarding,
+        name: 'onboarding',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return OnboardingScreen(
+            fromSettings: extra['fromSettings'] as bool? ?? false,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.settings,
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
         path: AppRoutes.results,
