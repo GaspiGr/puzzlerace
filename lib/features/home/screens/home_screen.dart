@@ -6,6 +6,7 @@ import '../../../app/theme.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/data/categories.dart';
 import '../../../core/data/puzzle_catalog.dart';
+import '../../notifications/providers/notifications_provider.dart';
 import '../../profile/providers/profile_provider.dart';
 import '../../profile/screens/profile_view.dart';
 import '../../stats/providers/stats_provider.dart';
@@ -91,40 +92,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
           ),
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppTheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.border),
+          _NotificationBell(
+            hasUnread: ref.watch(
+              notificationsProvider.select((l) => l.any((n) => !n.read)),
             ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                const Icon(
-                  Icons.notifications_outlined,
-                  color: AppTheme.textPrimary,
-                  size: 22,
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.accentOrange,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            onTap: () => _showNotifications(context),
           ).animate().fadeIn(delay: 200.ms),
         ],
       ),
     );
+  }
+
+  void _showNotifications(BuildContext context) {
+    final notifier = ref.read(notificationsProvider.notifier);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => const _NotificationsSheet(),
+    ).whenComplete(notifier.markAllRead);
   }
 
   Widget _buildModeSection(BuildContext context) {
@@ -386,6 +374,157 @@ class _SectionTitle extends StatelessWidget {
       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
         fontWeight: FontWeight.w700,
         fontSize: 18,
+      ),
+    );
+  }
+}
+
+/// Campana del Home (ítem 17): punto naranja solo con avisos sin leer.
+class _NotificationBell extends StatelessWidget {
+  final bool hasUnread;
+  final VoidCallback onTap;
+
+  const _NotificationBell({required this.hasUnread, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.border),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const Icon(
+              Icons.notifications_outlined,
+              color: AppTheme.textPrimary,
+              size: 22,
+            ),
+            if (hasUnread)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.accentOrange,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Panel de notificaciones internas.
+class _NotificationsSheet extends ConsumerWidget {
+  const _NotificationsSheet();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifications = ref.watch(notificationsProvider);
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.notifications_rounded,
+                  color: AppTheme.accent,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Notificaciones',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            if (notifications.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    'Sin notificaciones por ahora',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              )
+            else
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 380),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: notifications.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (context, i) {
+                    final n = notifications[i];
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surface2,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: n.read
+                              ? AppTheme.border
+                              : AppTheme.accent.withValues(alpha: 0.4),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(n.emoji, style: const TextStyle(fontSize: 22)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  n.title,
+                                  style: const TextStyle(
+                                    color: AppTheme.textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                if (n.body.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    n.body,
+                                    style: const TextStyle(
+                                      color: AppTheme.textMuted,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

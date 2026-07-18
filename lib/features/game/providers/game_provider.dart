@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../notifications/providers/notifications_provider.dart';
+import '../../stats/models/player_stats.dart';
 import '../../stats/providers/stats_provider.dart';
 import '../logic/puzzle_engine.dart';
 import '../models/puzzle_models.dart';
 
 class GameNotifier extends StateNotifier<GameState> {
-  GameNotifier(this.config, this._stats)
+  GameNotifier(this.config, this._stats, this._notifications)
     : super(
         GameState(
           tiles: PuzzleEngine.createShuffled(config.difficulty.tileCount),
@@ -19,6 +21,7 @@ class GameNotifier extends StateNotifier<GameState> {
 
   final PuzzleConfig config;
   final StatsNotifier _stats;
+  final NotificationsNotifier _notifications;
   Timer? _timer;
 
   void _startTimer() {
@@ -63,6 +66,15 @@ class GameNotifier extends StateNotifier<GameState> {
         isNewRecord: outcome.isNewRecord,
         previousBestSeconds: outcome.previousBestSeconds,
       );
+      if (outcome.isNewRecord) {
+        _notifications.add(
+          emoji: '🏆',
+          title: '¡Nuevo récord en ${config.difficulty.label}!',
+          body:
+              '${PlayerStats.formatSeconds(state.seconds)} en '
+              '${config.categoryEmoji} ${config.imageName}',
+        );
+      }
     } else {
       state = state
           .copyWith(tiles: tiles, moves: state.moves + 1)
@@ -99,5 +111,9 @@ class GameNotifier extends StateNotifier<GameState> {
 
 final gameProvider = StateNotifierProvider.autoDispose
     .family<GameNotifier, GameState, PuzzleConfig>(
-      (ref, config) => GameNotifier(config, ref.read(statsProvider.notifier)),
+      (ref, config) => GameNotifier(
+        config,
+        ref.read(statsProvider.notifier),
+        ref.read(notificationsProvider.notifier),
+      ),
     );

@@ -120,6 +120,7 @@ class ResultsScreen extends StatelessWidget {
 
   Widget _buildArtPreview(PuzzleConfig config) {
     final filePath = config.imageFilePath;
+    final url = config.imageUrl;
     return Container(
       width: 140,
       height: 140,
@@ -134,6 +135,18 @@ class ResultsScreen extends StatelessWidget {
                 File(filePath),
                 fit: BoxFit.cover,
                 // Si la foto ya no existe, se cae al arte procedural.
+                errorBuilder: (_, __, ___) => CustomPaint(
+                  painter: PuzzleArtPainter(
+                    baseColor: config.categoryColor,
+                    seed: config.artSeed,
+                  ),
+                  child: const SizedBox.expand(),
+                ),
+              )
+            : url != null
+            ? Image.network(
+                url,
+                fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => CustomPaint(
                   painter: PuzzleArtPainter(
                     baseColor: config.categoryColor,

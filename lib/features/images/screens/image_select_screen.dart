@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../app/theme.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/data/puzzle_catalog.dart';
+import '../../../core/services/pexels_service.dart';
 import '../../game/widgets/puzzle_art.dart';
+import '../providers/remote_images_provider.dart';
 
-/// Galería de imágenes disponibles para la categoría elegida (ítem 4).
-class ImageSelectScreen extends StatelessWidget {
+/// Galería de imágenes de la categoría elegida (ítem 4). Con la API de
+/// Pexels configurada muestra fotos reales (ítem 6b); sin clave usa el
+/// catálogo procedural local.
+class ImageSelectScreen extends ConsumerWidget {
   final String mode;
   final String categoryId;
   final String categoryLabel;
@@ -36,6 +41,23 @@ class ImageSelectScreen extends StatelessWidget {
         'imageId': image.id,
         'imageName': image.name,
         'imageSeed': image.seed,
+      },
+    );
+  }
+
+  void _selectRemote(BuildContext context, PexelsPhoto photo) {
+    context.push(
+      AppRoutes.difficulty,
+      extra: {
+        'mode': mode,
+        'categoryId': categoryId,
+        'categoryLabel': categoryLabel,
+        'categoryEmoji': categoryEmoji,
+        'categoryColor': categoryColor,
+        'imageId': 'pexels_${photo.id}',
+        'imageName': 'Foto de ${photo.photographer}',
+        'imageSeed': photo.id,
+        'imageUrl': photo.playUrl,
       },
     );
   }
@@ -72,8 +94,12 @@ class ImageSelectScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final images = PuzzleCatalog.forCategory(categoryId);
+    final photos =
+        ref.watch(remoteImagesProvider(categoryId)).valueOrNull ??
+        const <PexelsPhoto>[];
+    final useRemote = photos.isNotEmpty;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -94,7 +120,7 @@ class ImageSelectScreen extends StatelessWidget {
                   childAspectRatio: 0.82,
                 ),
                 // La primera celda abre la galería del dispositivo.
-                itemCount: images.length + 1,
+                itemCount: (useRemote ? photos.length : images.length) + 1,
                 itemBuilder: (context, i) {
                   if (i == 0) {
                     return _DeviceImageCard(
@@ -105,6 +131,18 @@ class ImageSelectScreen extends StatelessWidget {
                         .fadeIn(delay: 300.ms)
                         .slideY(begin: 0.15, end: 0, delay: 300.ms);
                   }
+                  final delay = (300 + i * 70).ms;
+                  if (useRemote) {
+                    final photo = photos[i - 1];
+                    return _RemoteImageCard(
+                          photo: photo,
+                          color: categoryColor,
+                          onTap: () => _selectRemote(context, photo),
+                        )
+                        .animate()
+                        .fadeIn(delay: delay)
+                        .slideY(begin: 0.15, end: 0, delay: delay);
+                  }
                   final image = images[i - 1];
                   return _ImageCard(
                         image: image,
@@ -112,11 +150,21 @@ class ImageSelectScreen extends StatelessWidget {
                         onTap: () => _selectImage(context, image),
                       )
                       .animate()
-                      .fadeIn(delay: (300 + i * 70).ms)
-                      .slideY(begin: 0.15, end: 0, delay: (300 + i * 70).ms);
+                      .fadeIn(delay: delay)
+                      .slideY(begin: 0.15, end: 0, delay: delay);
                 },
               ),
             ),
+            if (useRemote)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Center(
+                  child: Text(
+                    'Fotos proporcionadas por Pexels',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -388,6 +436,120 @@ class _DeviceImageCardState extends State<_DeviceImageCard> {
                 style: TextStyle(
                   color: AppTheme.textMuted.withValues(alpha: 0.9),
                   fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tarjeta de una foto del catálogo online (Pexels).
+class _RemoteImageCard extends StatefulWidget {
+  final PexelsPhoto photo;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _RemoteImageCard({
+    required this.photo,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  State<_RemoteImageCard> createState() => _RemoteImageCardState();
+}
+
+class _RemoteImageCardState extends State<_RemoteImageCard> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.95 : 1.0,
+        duration: const Duration(milliseconds: 130),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: widget.color.withValues(alpha: _pressed ? 0.6 : 0.2),
+              width: _pressed ? 1.5 : 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      widget.photo.thumbUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Container(
+                          color: AppTheme.surface2,
+                          child: const Center(
+                            child: SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppTheme.accent,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (_, __, ___) => Container(
+                        color: AppTheme.surface2,
+                        child: const Center(
+                          child: Icon(
+                            Icons.broken_image_rounded,
+                            color: AppTheme.textMuted,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 2, 12, 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.photo.photographer,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      color: widget.color,
+                      size: 15,
+                    ),
+                  ],
                 ),
               ),
             ],

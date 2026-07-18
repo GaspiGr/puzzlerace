@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
+import '../../../core/constants/app_routes.dart';
 import '../../game/models/puzzle_models.dart';
 import '../../stats/models/player_stats.dart';
 import '../../stats/providers/stats_provider.dart';
@@ -31,9 +33,30 @@ class ProfileView extends ConsumerWidget {
 
   Widget _buildHeader(BuildContext context, WidgetRef ref, String name) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Column(
         children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: GestureDetector(
+              onTap: () => context.push(AppRoutes.settings),
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.border),
+                ),
+                child: const Icon(
+                  Icons.settings_rounded,
+                  color: AppTheme.textPrimary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ).animate().fadeIn(duration: 250.ms),
+          const SizedBox(height: 4),
           Container(
                 width: 88,
                 height: 88,
