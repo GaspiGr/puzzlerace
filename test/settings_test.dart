@@ -8,13 +8,17 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('SettingsNotifier', () {
-    test('sonido y vibración activados por defecto', () async {
-      SharedPreferences.setMockInitialValues({});
-      final prefs = await SharedPreferences.getInstance();
-      final notifier = SettingsNotifier(prefs);
-      expect(notifier.state.soundEnabled, isTrue);
-      expect(notifier.state.hapticsEnabled, isTrue);
-    });
+    test(
+      'sonido, vibración y números de ayuda activados por defecto',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        final notifier = SettingsNotifier(prefs);
+        expect(notifier.state.soundEnabled, isTrue);
+        expect(notifier.state.hapticsEnabled, isTrue);
+        expect(notifier.state.showHintsEnabled, isTrue);
+      },
+    );
 
     test('los cambios persisten entre sesiones', () async {
       SharedPreferences.setMockInitialValues({});
@@ -23,10 +27,12 @@ void main() {
 
       notifier.setSoundEnabled(false);
       notifier.setHapticsEnabled(false);
+      notifier.setShowHintsEnabled(false);
 
       final restored = SettingsNotifier(prefs);
       expect(restored.state.soundEnabled, isFalse);
       expect(restored.state.hapticsEnabled, isFalse);
+      expect(restored.state.showHintsEnabled, isFalse);
     });
   });
 

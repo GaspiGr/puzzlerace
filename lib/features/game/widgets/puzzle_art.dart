@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import '../../../app/theme.dart';
 import '../logic/image_crop.dart';
 
 /// Arte procedural determinístico del puzzle.
@@ -168,19 +167,43 @@ class PuzzleTilePainter extends CustomPainter {
     }
 
     if (showHint) {
-      final painter = TextPainter(
+      // El número se dibuja dos veces: contorno oscuro + relleno claro,
+      // para que sea legible sobre cualquier zona de la foto (clara u
+      // oscura) sin que el jugador tenga que configurar nada.
+      final fontSize = size.shortestSide * 0.16;
+      final text = '${tileId + 1}';
+      final pad = size.shortestSide * 0.07;
+      final offset = Offset(pad, pad);
+
+      final stroke = TextPainter(
         text: TextSpan(
-          text: '${tileId + 1}',
+          text: text,
           style: TextStyle(
-            color: AppTheme.textPrimary.withValues(alpha: 0.55),
-            fontSize: size.shortestSide * 0.16,
+            fontSize: fontSize,
             fontWeight: FontWeight.w700,
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = fontSize * 0.22
+              ..strokeJoin = StrokeJoin.round
+              ..color = Colors.black.withValues(alpha: 0.8),
           ),
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      final pad = size.shortestSide * 0.07;
-      painter.paint(canvas, Offset(pad, pad));
+      stroke.paint(canvas, offset);
+
+      final fill = TextPainter(
+        text: TextSpan(
+          text: text,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.w700,
+            color: Colors.white.withValues(alpha: 0.95),
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      fill.paint(canvas, offset);
     }
   }
 
