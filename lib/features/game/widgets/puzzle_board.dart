@@ -14,12 +14,16 @@ class PuzzleBoard extends StatelessWidget {
   /// Foto decodificada del dispositivo; nula = arte procedural.
   final ui.Image? image;
 
+  /// Números de ayuda sobre las piezas (Ajustes).
+  final bool showHints;
+
   const PuzzleBoard({
     super.key,
     required this.config,
     required this.state,
     required this.onTileTap,
     this.image,
+    this.showHints = true,
   });
 
   @override
@@ -48,6 +52,7 @@ class PuzzleBoard extends StatelessWidget {
               tileId: tileId,
               config: config,
               image: image,
+              showHint: showHints,
               isSelected: state.selectedIndex == slot,
               isCorrect: tileId == slot,
               onTap: () => onTileTap(slot),
@@ -63,6 +68,7 @@ class _PuzzleTile extends StatelessWidget {
   final int tileId;
   final PuzzleConfig config;
   final ui.Image? image;
+  final bool showHint;
   final bool isSelected;
   final bool isCorrect;
   final VoidCallback onTap;
@@ -71,6 +77,7 @@ class _PuzzleTile extends StatelessWidget {
     required this.tileId,
     required this.config,
     required this.image,
+    required this.showHint,
     required this.isSelected,
     required this.isCorrect,
     required this.onTap,
@@ -105,6 +112,7 @@ class _PuzzleTile extends StatelessWidget {
                 baseColor: config.categoryColor,
                 seed: config.artSeed,
                 image: image,
+                showHint: showHint,
               ),
               child: const SizedBox.expand(),
             ),

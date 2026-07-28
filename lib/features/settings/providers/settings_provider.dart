@@ -7,12 +7,24 @@ class AppSettings {
   final bool soundEnabled;
   final bool hapticsEnabled;
 
-  const AppSettings({this.soundEnabled = true, this.hapticsEnabled = true});
+  /// Números de ayuda sobre las piezas del tablero.
+  final bool showHintsEnabled;
 
-  AppSettings copyWith({bool? soundEnabled, bool? hapticsEnabled}) {
+  const AppSettings({
+    this.soundEnabled = true,
+    this.hapticsEnabled = true,
+    this.showHintsEnabled = true,
+  });
+
+  AppSettings copyWith({
+    bool? soundEnabled,
+    bool? hapticsEnabled,
+    bool? showHintsEnabled,
+  }) {
     return AppSettings(
       soundEnabled: soundEnabled ?? this.soundEnabled,
       hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
+      showHintsEnabled: showHintsEnabled ?? this.showHintsEnabled,
     );
   }
 }
@@ -20,12 +32,14 @@ class AppSettings {
 class SettingsNotifier extends StateNotifier<AppSettings> {
   static const _keySound = 'settings.sound';
   static const _keyHaptics = 'settings.haptics';
+  static const _keyHints = 'settings.hints';
 
   SettingsNotifier(this._prefs)
     : super(
         AppSettings(
           soundEnabled: _prefs.getBool(_keySound) ?? true,
           hapticsEnabled: _prefs.getBool(_keyHaptics) ?? true,
+          showHintsEnabled: _prefs.getBool(_keyHints) ?? true,
         ),
       );
 
@@ -39,6 +53,11 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   void setHapticsEnabled(bool value) {
     state = state.copyWith(hapticsEnabled: value);
     _prefs.setBool(_keyHaptics, value);
+  }
+
+  void setShowHintsEnabled(bool value) {
+    state = state.copyWith(showHintsEnabled: value);
+    _prefs.setBool(_keyHints, value);
   }
 }
 

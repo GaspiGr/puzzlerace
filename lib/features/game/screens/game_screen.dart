@@ -8,6 +8,7 @@ import '../logic/puzzle_engine.dart';
 import '../models/puzzle_models.dart';
 import '../providers/game_provider.dart';
 import '../providers/puzzle_image_provider.dart';
+import '../../settings/providers/settings_provider.dart';
 import '../services/game_feedback.dart';
 import '../widgets/puzzle_board.dart';
 
@@ -72,6 +73,9 @@ class GameScreen extends ConsumerWidget {
     GameNotifier notifier,
   ) {
     final imageAsync = ref.watch(puzzleImageProvider(config.imageSource));
+    final showHints = ref.watch(
+      settingsProvider.select((s) => s.showHintsEnabled),
+    );
     return imageAsync
         .when(
           data: (image) => PuzzleBoard(
@@ -82,6 +86,7 @@ class GameScreen extends ConsumerWidget {
               notifier.tapTile(slot);
             },
             image: image,
+            showHints: showHints,
           ),
           loading: () => AspectRatio(
             aspectRatio: 1,
@@ -101,6 +106,7 @@ class GameScreen extends ConsumerWidget {
             config: config,
             state: state,
             onTileTap: notifier.tapTile,
+            showHints: showHints,
           ),
         )
         .animate()
