@@ -116,14 +116,17 @@ class PuzzleArtPainter extends CustomPainter {
       oldDelegate.baseColor != baseColor || oldDelegate.seed != seed;
 }
 
-/// Pinta una sola pieza: recorta la región `tileId` de la foto elegida
-/// (si `image` no es nula) o de la obra procedural completa.
+/// Pinta una sola pieza: recorta la región `tileId` de la imagen de la
+/// partida (foto o arte procedural ya rasterizado). Sin imagen dibuja un
+/// color plano mientras se prepara (`placeholder`) o, como último recurso,
+/// la obra procedural completa.
 class PuzzleTilePainter extends CustomPainter {
   final int tileId;
   final int gridSize;
   final Color baseColor;
   final int seed;
   final ui.Image? image;
+  final bool placeholder;
   final bool showHint;
 
   const PuzzleTilePainter({
@@ -132,13 +135,19 @@ class PuzzleTilePainter extends CustomPainter {
     required this.baseColor,
     required this.seed,
     this.image,
+    this.placeholder = false,
     this.showHint = true,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final img = image;
-    if (img != null) {
+    if (img == null && placeholder) {
+      canvas.drawRect(
+        Offset.zero & size,
+        Paint()..color = Color.lerp(baseColor, Colors.black, 0.7)!,
+      );
+    } else if (img != null) {
       canvas.drawImageRect(
         img,
         ImageCrop.tileSource(
@@ -214,5 +223,6 @@ class PuzzleTilePainter extends CustomPainter {
       oldDelegate.baseColor != baseColor ||
       oldDelegate.seed != seed ||
       oldDelegate.image != image ||
+      oldDelegate.placeholder != placeholder ||
       oldDelegate.showHint != showHint;
 }
