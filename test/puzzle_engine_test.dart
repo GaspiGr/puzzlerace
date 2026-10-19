@@ -54,6 +54,36 @@ void main() {
       expect(Difficulty.hard.gridSize, 5);
       expect(Difficulty.hard.tileCount, 25);
     });
+
+    test('las estrellas dependen del tiempo, con límites inclusivos', () {
+      expect(Difficulty.easy.starsFor(10), 3);
+      expect(Difficulty.easy.starsFor(30), 3);
+      expect(Difficulty.easy.starsFor(31), 2);
+      expect(Difficulty.easy.starsFor(60), 2);
+      expect(Difficulty.easy.starsFor(61), 1);
+      expect(Difficulty.hard.starsFor(180), 3);
+      expect(Difficulty.hard.starsFor(500), 1);
+    });
+
+    test('nextStarSeconds indica el límite de la siguiente estrella', () {
+      expect(Difficulty.medium.nextStarSeconds(80), isNull);
+      expect(Difficulty.medium.nextStarSeconds(120), 90);
+      expect(Difficulty.medium.nextStarSeconds(400), 180);
+    });
+
+    test('los límites de estrellas crecen con la dificultad', () {
+      for (final d in Difficulty.values) {
+        expect(d.threeStarSeconds, lessThan(d.twoStarSeconds));
+      }
+      expect(
+        Difficulty.easy.threeStarSeconds,
+        lessThan(Difficulty.medium.threeStarSeconds),
+      );
+      expect(
+        Difficulty.medium.threeStarSeconds,
+        lessThan(Difficulty.hard.threeStarSeconds),
+      );
+    });
   });
 
   group('GameState', () {

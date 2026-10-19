@@ -93,4 +93,40 @@ void main() {
 
     expect(find.textContaining('Tu primer tiempo en Medio'), findsOneWidget);
   });
+
+  testWidgets('muestra las estrellas ganadas y cómo subir de estrella', (
+    tester,
+  ) async {
+    // Medio: 95 s supera el límite de 3 estrellas (90 s) → 2 estrellas.
+    await pumpResults(
+      tester,
+      const GameResult(
+        config: _config,
+        seconds: 95,
+        moves: 34,
+        isNewRecord: false,
+        previousBestSeconds: 80,
+      ),
+    );
+
+    expect(find.byIcon(Icons.star_rounded), findsNWidgets(2));
+    expect(find.byIcon(Icons.star_outline_rounded), findsOneWidget);
+    expect(find.textContaining('Termínalo en 01:30 o menos'), findsOneWidget);
+  });
+
+  testWidgets('un tiempo rápido da 3 estrellas', (tester) async {
+    await pumpResults(
+      tester,
+      const GameResult(
+        config: _config,
+        seconds: 70,
+        moves: 28,
+        isNewRecord: true,
+        previousBestSeconds: 80,
+      ),
+    );
+
+    expect(find.byIcon(Icons.star_rounded), findsNWidgets(3));
+    expect(find.text('¡Puntuación perfecta!'), findsOneWidget);
+  });
 }

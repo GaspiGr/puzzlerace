@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../core/constants/app_routes.dart';
+import '../../../core/widgets/star_rating.dart';
 import '../../game/models/puzzle_models.dart';
 import '../../stats/models/player_stats.dart';
 import '../../stats/providers/stats_provider.dart';
@@ -397,6 +398,10 @@ class _BestTimeRow extends StatelessWidget {
               ),
             ),
           ),
+          if (seconds != null) ...[
+            StarRating(stars: difficulty.starsFor(seconds!), size: 14),
+            const SizedBox(width: 10),
+          ],
           Text(
             PlayerStats.formatSeconds(seconds),
             style: TextStyle(
@@ -472,13 +477,23 @@ class _HistoryTile extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            entry.formattedTime,
-            style: const TextStyle(
-              color: AppTheme.accent,
-              fontWeight: FontWeight.w700,
-              fontSize: 15,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                entry.formattedTime,
+                style: const TextStyle(
+                  color: AppTheme.accent,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
+              const SizedBox(height: 2),
+              StarRating(
+                stars: entry.difficulty.starsFor(entry.seconds),
+                size: 12,
+              ),
+            ],
           ),
         ],
       ),
