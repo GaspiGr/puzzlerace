@@ -11,8 +11,11 @@ class PuzzleBoard extends StatelessWidget {
   final GameState state;
   final ValueChanged<int> onTileTap;
 
-  /// Foto decodificada del dispositivo; nula = arte procedural.
+  /// Imagen de la partida (foto o arte rasterizado).
   final ui.Image? image;
+
+  /// La imagen aún se está preparando: piezas en color plano.
+  final bool placeholder;
 
   /// Números de ayuda sobre las piezas (Ajustes).
   final bool showHints;
@@ -23,6 +26,7 @@ class PuzzleBoard extends StatelessWidget {
     required this.state,
     required this.onTileTap,
     this.image,
+    this.placeholder = false,
     this.showHints = true,
   });
 
@@ -52,6 +56,7 @@ class PuzzleBoard extends StatelessWidget {
               tileId: tileId,
               config: config,
               image: image,
+              placeholder: placeholder,
               showHint: showHints,
               isSelected: state.selectedIndex == slot,
               isCorrect: tileId == slot,
@@ -68,6 +73,7 @@ class _PuzzleTile extends StatelessWidget {
   final int tileId;
   final PuzzleConfig config;
   final ui.Image? image;
+  final bool placeholder;
   final bool showHint;
   final bool isSelected;
   final bool isCorrect;
@@ -77,6 +83,7 @@ class _PuzzleTile extends StatelessWidget {
     required this.tileId,
     required this.config,
     required this.image,
+    required this.placeholder,
     required this.showHint,
     required this.isSelected,
     required this.isCorrect,
@@ -112,6 +119,7 @@ class _PuzzleTile extends StatelessWidget {
                 baseColor: config.categoryColor,
                 seed: config.artSeed,
                 image: image,
+                placeholder: placeholder,
                 showHint: showHint,
               ),
               child: const SizedBox.expand(),

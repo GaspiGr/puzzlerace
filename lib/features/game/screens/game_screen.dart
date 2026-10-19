@@ -64,50 +64,37 @@ class GameScreen extends ConsumerWidget {
     );
   }
 
-  /// El tablero espera a que la foto del dispositivo (si hay) esté
-  /// decodificada; con arte procedural resuelve de inmediato.
+  /// El tablero aparece de inmediato: mientras la imagen de la partida se
+  /// prepara (foto o arte rasterizado) las piezas se ven en color plano, y si
+  /// la foto no se puede leer se juega con el arte procedural.
   Widget _buildBoard(
     BuildContext context,
     WidgetRef ref,
     GameState state,
     GameNotifier notifier,
   ) {
-    final imageAsync = ref.watch(puzzleImageProvider(config.imageSource));
+    final imageAsync = ref.watch(puzzleImageProvider(config));
     final showHints = ref.watch(
       settingsProvider.select((s) => s.showHintsEnabled),
     );
-    return imageAsync
-        .when(
-          data: (image) => PuzzleBoard(
-            config: config,
-            state: state,
-            onTileTap: (slot) {
-              ref.read(gameFeedbackProvider).tileTap();
-              notifier.tapTile(slot);
-            },
-            image: image,
-            showHints: showHints,
-          ),
-          loading: () => AspectRatio(
-            aspectRatio: 1,
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppTheme.surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.border),
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(color: AppTheme.accent),
-              ),
+    final loading = imageAsync.isLoading;
+    return Stack(
+          alignment: Alignment.center,
+          children: [
+            PuzzleBoard(
+              config: config,
+              state: state,
+              onTileTap: (slot) {
+                ref.read(gameFeedbackProvider).tileTap();
+                notifier.tapTile(slot);
+              },
+              image: imageAsync.valueOrNull,
+              placeholder: loading,
+              showHints: showHints,
             ),
-          ),
-          // Foto ilegible o borrada: se juega con el arte procedural.
-          error: (_, __) => PuzzleBoard(
-            config: config,
-            state: state,
-            onTileTap: notifier.tapTile,
-            showHints: showHints,
-          ),
+            if (loading && config.imageSource != null)
+              const CircularProgressIndicator(color: AppTheme.accent),
+          ],
         )
         .animate()
         .fadeIn(duration: 400.ms)
@@ -293,9 +280,8 @@ class _PauseOverlay extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             'Pausa',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.headlineMedium
+                ?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
           Text(
