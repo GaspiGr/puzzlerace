@@ -12,12 +12,93 @@ import '../../settings/providers/settings_provider.dart';
 import '../services/game_feedback.dart';
 import '../widgets/puzzle_board.dart';
 
-class GameScreen extends ConsumerWidget {
+class GameScreen extends ConsumerStatefulWidget {
   final PuzzleConfig config;
   const GameScreen({super.key, required this.config});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends ConsumerState<GameScreen> {
+  late final AppLifecycleListener _lifecycle;
+  bool _confirmingExit = false;
+
+  PuzzleConfig get config => widget.config;
+
+  @override
+  void initState() {
+    super.initState();
+    // Con la app en segundo plano (llamada, notificaciones, otra app) la
+    // partida se pausa: el cronómetro no debe correr si nadie juega.
+    _lifecycle = AppLifecycleListener(
+      onStateChange: (lifecycle) {
+        if (lifecycle != AppLifecycleState.resumed) {
+          ref.read(gameProvider(config).notifier).pause();
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
+  /// Pregunta antes de abandonar una partida en curso. La partida queda en
+  /// pausa mientras el diálogo está abierto y se reanuda si el jugador sigue.
+  Future<void> _confirmExit() async {
+    if (_confirmingExit) return;
+    _confirmingExit = true;
+    final notifier = ref.read(gameProvider(config).notifier);
+    final wasPlaying =
+        ref.read(gameProvider(config)).status == GameStatus.playing;
+    notifier.pause();
+
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppTheme.border),
+        ),
+        title: const Text(
+          '¿Abandonar la partida?',
+          style: TextStyle(color: AppTheme.textPrimary, fontSize: 18),
+        ),
+        content: const Text(
+          'Perderás el progreso de este puzzle y no contará como completado.',
+          style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(
+              'Abandonar',
+              style: TextStyle(color: AppTheme.accentOrange),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Seguir jugando'),
+          ),
+        ],
+      ),
+    );
+
+    _confirmingExit = false;
+    if (!mounted) return;
+    if (leave == true) {
+      Navigator.of(context).pop();
+    } else if (wasPlaying) {
+      notifier.resume();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Al completar el puzzle se navega a la pantalla de resultados.
     ref.listen(gameProvider(config), (previous, next) {
       if (previous?.status != GameStatus.won && next.status == GameStatus.won) {
@@ -38,28 +119,36 @@ class GameScreen extends ConsumerWidget {
     final state = ref.watch(gameProvider(config));
     final notifier = ref.read(gameProvider(config).notifier);
 
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(context, notifier),
-                _buildStatsRow(context, state),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _buildBoard(context, ref, state, notifier),
-                ),
-                const Spacer(),
-                _buildFooterHint(context, state),
-              ],
+    // Salir con la flecha o el gesto de volver pide confirmación mientras la
+    // partida sigue en curso.
+    return PopScope(
+      canPop: state.status == GameStatus.won,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _confirmExit();
+      },
+      child: Scaffold(
+        backgroundColor: AppTheme.background,
+        body: Stack(
+          children: [
+            SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(context, notifier),
+                  _buildStatsRow(context, state),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: _buildBoard(context, ref, state, notifier),
+                  ),
+                  const Spacer(),
+                  _buildFooterHint(context, state),
+                ],
+              ),
             ),
-          ),
-          if (state.status == GameStatus.paused)
-            _PauseOverlay(onResume: notifier.resume),
-        ],
+            if (state.status == GameStatus.paused)
+              _PauseOverlay(onResume: notifier.resume),
+          ],
+        ),
       ),
     );
   }
@@ -108,7 +197,7 @@ class GameScreen extends ConsumerWidget {
         children: [
           _RoundIconButton(
             icon: Icons.arrow_back_ios_new_rounded,
-            onTap: () => context.pop(),
+            onTap: () => Navigator.of(context).maybePop(),
           ).animate().fadeIn(duration: 300.ms),
           const SizedBox(width: 14),
           Expanded(
