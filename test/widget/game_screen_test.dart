@@ -72,6 +72,10 @@ void main() {
       ),
     );
     await tester.tap(find.text('Inicio'));
+    // El primer frame de una ruta nueva se construye fuera de escena (para
+    // medir las transiciones) y los finders lo ignoran: hace falta un
+    // segundo frame para que la partida quede visible.
+    await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
   }
 
@@ -191,7 +195,9 @@ void main() {
     await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Abandonar'));
+    await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.byType(GameScreen), findsNothing);
     expect(find.text('Inicio'), findsOneWidget);
@@ -215,6 +221,12 @@ void main() {
 
     expect(find.text('Pausa'), findsOneWidget);
     expect(find.text('El tiempo está detenido'), findsOneWidget);
+
+    // Cerrar el overlay deja sin timers pendientes sus animaciones.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.tap(find.text('Continuar'));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Pausa'), findsNothing);
 
     await tearDownGame(tester);
   });
