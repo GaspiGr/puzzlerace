@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../core/constants/app_routes.dart';
+import '../../../core/widgets/star_rating.dart';
 import '../../game/models/puzzle_models.dart';
 import '../../game/widgets/puzzle_art.dart';
 import '../../stats/models/player_stats.dart';
@@ -82,7 +83,9 @@ class ResultsScreen extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium,
           textAlign: TextAlign.center,
         ).animate().fadeIn(delay: 220.ms),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
+        _buildStars(context, config.difficulty),
+        const SizedBox(height: 20),
         _buildArtPreview(config).animate().fadeIn(delay: 280.ms),
         const SizedBox(height: 24),
         Row(
@@ -114,6 +117,25 @@ class ResultsScreen extends StatelessWidget {
             .fadeIn(delay: 500.ms)
             .slideY(begin: 0.2, end: 0, delay: 500.ms),
         const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildStars(BuildContext context, Difficulty difficulty) {
+    final stars = difficulty.starsFor(result.seconds);
+    final next = difficulty.nextStarSeconds(result.seconds);
+    return Column(
+      children: [
+        StarRating(stars: stars, size: 40, animated: true),
+        const SizedBox(height: 6),
+        Text(
+          next == null
+              ? '¡Puntuación perfecta!'
+              : 'Termínalo en ${PlayerStats.formatSeconds(next)} o menos '
+                    'para ganar otra estrella',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
+        ).animate().fadeIn(delay: 800.ms),
       ],
     );
   }

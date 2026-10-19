@@ -369,8 +369,9 @@ class _PauseOverlay extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             'Pausa',
-            style: Theme.of(context).textTheme.headlineMedium
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
           Text(

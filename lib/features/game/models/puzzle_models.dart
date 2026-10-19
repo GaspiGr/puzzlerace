@@ -2,21 +2,59 @@ import 'dart:ui';
 
 /// Niveles de dificultad disponibles para una partida.
 enum Difficulty {
-  easy(gridSize: 3, label: 'Fácil', description: '9 piezas · Relajado'),
-  medium(gridSize: 4, label: 'Medio', description: '16 piezas · Equilibrado'),
-  hard(gridSize: 5, label: 'Difícil', description: '25 piezas · Para expertos');
+  easy(
+    gridSize: 3,
+    label: 'Fácil',
+    description: '9 piezas · Relajado',
+    threeStarSeconds: 30,
+    twoStarSeconds: 60,
+  ),
+  medium(
+    gridSize: 4,
+    label: 'Medio',
+    description: '16 piezas · Equilibrado',
+    threeStarSeconds: 90,
+    twoStarSeconds: 180,
+  ),
+  hard(
+    gridSize: 5,
+    label: 'Difícil',
+    description: '25 piezas · Para expertos',
+    threeStarSeconds: 180,
+    twoStarSeconds: 360,
+  );
 
   const Difficulty({
     required this.gridSize,
     required this.label,
     required this.description,
+    required this.threeStarSeconds,
+    required this.twoStarSeconds,
   });
 
   final int gridSize;
   final String label;
   final String description;
 
+  /// Tiempo máximo (inclusive) para 3 y 2 estrellas; más lento es 1.
+  final int threeStarSeconds;
+  final int twoStarSeconds;
+
   int get tileCount => gridSize * gridSize;
+
+  /// Estrellas (1 a 3) que vale terminar el puzzle en [seconds].
+  int starsFor(int seconds) {
+    if (seconds <= threeStarSeconds) return 3;
+    if (seconds <= twoStarSeconds) return 2;
+    return 1;
+  }
+
+  /// Tiempo límite para subir a la siguiente estrella, o null con 3.
+  int? nextStarSeconds(int seconds) {
+    if (seconds <= threeStarSeconds) return null;
+    if (seconds <= twoStarSeconds) return threeStarSeconds;
+    return twoStarSeconds;
+  }
 }
 
 /// Configuración completa de una partida.
